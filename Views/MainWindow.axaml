@@ -23,8 +23,10 @@
 		<Border Grid.Column="0" Background="DarkRed">
             <StackPanel>
                 <Grid ColumnDefinitions="7*,3*" ColumnSpacing="12">
-                    <Button Grid.Column="1" Content="Execute!" Command="{Binding MoveLuaCommand}" />
+					<TextBox Grid.Column="0" Text="{Binding InputText}" />
+                    <Button Grid.Column="1" Content="Double!" Command="{Binding MoveLuaCommand}" />
                 </Grid>
+                <TextBlock Text="{Binding DisplayText}" />
             </StackPanel>
         </Border>
         <Border Grid.Column="1" Background="CadetBlue">
