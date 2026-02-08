@@ -11,12 +11,6 @@ namespace cheluan.ViewModels
         private readonly ILuaService _luaService;
         private readonly Turtle _turtle;
 
-        [ObservableProperty]
-        private string? _inputText; // generates public string InputText { get; set; }
-
-        [ObservableProperty]
-        private string? _displayText;
-
         [RelayCommand]
         private void MoveLua()
         {
