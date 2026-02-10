@@ -1,4 +1,4 @@
-<Window xmlns="https://github.com/avaloniaui"
+﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:cheluan.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -11,6 +11,10 @@
         MinHeight="600"
         WindowStartupLocation="CenterScreen"
         Icon="/Assets/avalonia-logo.ico"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaTitleBarHeightHint="-1"
+        TransparencyLevelHint="AcrylicBlur"
+        Background="#1e1e1e"
         Title="cheluan">
 
     <Design.DataContext>
@@ -19,9 +23,54 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
     
-    <Grid ColumnDefinitions="400,*">
-		<Border Grid.Column="0" Background="DarkRed"></Border>
-        <Border Grid.Column="1" Background="CadetBlue"></Border>
+<Grid RowDefinitions="32, Auto, *">
+    <!-- TITLEBAR -->
+    <Border Grid.Row="0" Name="Titlebar" PointerPressed="Titlebar_PointerPressed"
+            Background="#2d2d2d" Height="32" 
+            BorderBrush="#3e3e42"  BorderThickness="0,0,0,1">
+
+        <TextBlock Text="cheluan"
+                   Margin="12,2,0,0" VerticalAlignment="Center" 
+                   Foreground="#888888" FontWeight="SemiBold" />
+    </Border>
+
+    <!-- BUTTONS (we are lacking icons...) -->
+    <Border Grid.Row="1" Margin="0,12,0,0">
+        <StackPanel Orientation="Horizontal" 
+                    HorizontalAlignment="Center" VerticalAlignment="Center" 
+                    Margin="10,0" Spacing="5">
+            <Button Content="Run" Command="{Binding ExecuteCodeCommand}"  Padding="15,3"
+                    Background="#28a745" Foreground="White" />
+            <Button Content="Open" Padding="15,3"
+                    Background="#3e3e42" Foreground="#d4d4d4" />
+        </StackPanel>
+    </Border>
+
+    <Grid Grid.Row="2" Margin="12">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="400" MinWidth="200" MaxWidth="800" />
+            <ColumnDefinition Width="4" />
+            <ColumnDefinition Width="*" MinWidth="300" />
+        </Grid.ColumnDefinitions>
+
+        <!-- CODE EDITOR -->
+        <Border Grid.Column="0">
+            <TextBox Name="CodeEditor" AcceptsReturn="True" AcceptsTab="True" 
+                     BorderThickness="0"  Background="Transparent" Foreground="#d4d4d4"
+                     FontFamily="Consolas,Monospace" Padding="10"
+                     Text="{Binding CodeEditorContent, Mode=TwoWay}" Watermark="turtle.Move(25)" />
+        </Border>
+
+        <GridSplitter Grid.Column="1" Background="#2d2d2d" ResizeDirection="Columns"/>
+
+        <!-- VISUALIZER -->
+        <Border Grid.Column="2">
+            <Viewbox Stretch="Uniform">
+                <Canvas Name="TurtleCanvas" 
+                        Width="800" Height="800" />
+            </Viewbox>
+        </Border>
     </Grid>
+</Grid>
 
 </Window>

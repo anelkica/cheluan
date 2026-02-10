@@ -9,33 +9,26 @@ namespace cheluan.ViewModels
     public partial class MainWindowViewModel : ViewModelBase
     {
         private readonly ILuaService _luaService;
-        private readonly Turtle _turtle;
+        public readonly Turtle TurtleEngine;
 
         [ObservableProperty]
-        private string? _inputText; // generates public string InputText { get; set; }
-
-        [ObservableProperty]
-        private string? _displayText;
-
-        [RelayCommand]
-        private void MoveLua()
-        {
-            Result result = _luaService.ExecuteCode("turtle.Move(50)");
-
-            if (result.success)
-            {
-                Console.WriteLine("Executed: turtle.Move(50)");
-            }
-            else
-            {
-                Console.WriteLine(result.error);
-            }
-        }
+        private string _codeEditorContent;
 
         public MainWindowViewModel(ILuaService luaService, Turtle turtle)
         {
             _luaService = luaService;
-            _turtle = turtle;
+            TurtleEngine = turtle;
+        }
+
+        [RelayCommand]
+        public void ExecuteCode()
+        {
+            Result result = _luaService.ExecuteCode(CodeEditorContent);
+
+            if (result.Failed)
+            {
+                Console.WriteLine($"ERROR: {result.Error}");
+            }
         }
     }
 }
