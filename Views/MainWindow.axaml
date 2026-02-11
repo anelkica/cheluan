@@ -66,7 +66,7 @@
         <!-- VISUALIZER -->
         <Border Grid.Column="2">
             <Viewbox Stretch="Uniform">
-                <Canvas Name="TurtleCanvas" 
+                <Canvas Name="TurtleCanvas" Background="Transparent"
                         Width="800" Height="800" />
             </Viewbox>
         </Border>

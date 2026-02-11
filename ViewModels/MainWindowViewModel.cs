@@ -18,6 +18,10 @@ namespace cheluan.ViewModels
         {
             _luaService = luaService;
             TurtleEngine = turtle;
+
+            TurtleEngine.X = 400;
+            TurtleEngine.Y = 400;
+            TurtleEngine.Angle = 0;
         }
 
         [RelayCommand]

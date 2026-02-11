@@ -9,9 +9,13 @@ namespace cheluan.Views
 {
     public partial class MainWindow : Window
     {
+        private readonly TurtleRenderer _renderer;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            _renderer = new TurtleRenderer(TurtleCanvas);
         }
 
         protected override void OnOpened(EventArgs e)
@@ -22,7 +26,7 @@ namespace cheluan.Views
 
             Turtle turtle = vm.TurtleEngine;
 
-            turtle.OnMove = OnTurtleMove;
+            turtle.OnMove = _renderer.DrawStep;
         }
 
         // diy titlebar
@@ -32,25 +36,6 @@ namespace cheluan.Views
             {
                 BeginMoveDrag(e);
             }
-        }
-
-        private void OnTurtleMove(TurtleStep step)
-        {
-            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-            {
-                Line line = new Line
-                {
-                    StartPoint = new Avalonia.Point(step.StartX, step.StartY),
-                    EndPoint = new Avalonia.Point(step.EndX, step.EndY),
-                    Stroke = Brushes.LawnGreen,
-                    StrokeThickness = 2,
-                    StrokeJoin = PenLineJoin.Round,
-                    StrokeLineCap = PenLineCap.Round
-                };
-
-                // Adding it to your named Canvas
-                TurtleCanvas.Children.Add(line);
-            });
         }
     }
 }
