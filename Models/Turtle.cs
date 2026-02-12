@@ -30,12 +30,17 @@ public class Turtle
         return Result.Ok();
     }
 
-    public Result Turn(double degrees)
+    public void Turn(double degrees)
     {
         Angle += degrees;
-        Console.WriteLine(Angle);
+    }
 
-        return Result.Ok();
+    public void Reset(double x, double y) 
+    {
+        X = x;
+        Y = y;
+        Angle = 0;
+        
     }
 
     [MoonSharpVisible(true)]

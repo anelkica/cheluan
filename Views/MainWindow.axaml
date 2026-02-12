@@ -1,14 +1,13 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:AvaloniaEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
         xmlns:vm="using:cheluan.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="cheluan.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-
-        MinWidth="800"
-        MinHeight="600"
+        MinWidth="800" MinHeight="600"
         WindowStartupLocation="CenterScreen"
         Icon="/Assets/avalonia-logo.ico"
         ExtendClientAreaToDecorationsHint="True"
@@ -18,59 +17,97 @@
         Title="cheluan">
 
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainWindowViewModel/>
+        <vm:MainWindowViewModel />
     </Design.DataContext>
-    
-<Grid RowDefinitions="32, Auto, *">
-    <!-- TITLEBAR -->
-    <Border Grid.Row="0" Name="Titlebar" PointerPressed="Titlebar_PointerPressed"
-            Background="#2d2d2d" Height="32" 
-            BorderBrush="#3e3e42"  BorderThickness="0,0,0,1">
 
-        <TextBlock Text="cheluan"
-                   Margin="12,2,0,0" VerticalAlignment="Center" 
-                   Foreground="#888888" FontWeight="SemiBold" />
-    </Border>
-
-    <!-- BUTTONS (we are lacking icons...) -->
-    <Border Grid.Row="1" Margin="0,12,0,0">
-        <StackPanel Orientation="Horizontal" 
-                    HorizontalAlignment="Center" VerticalAlignment="Center" 
-                    Margin="10,0" Spacing="5">
-            <Button Content="Run" Command="{Binding ExecuteCodeCommand}"  Padding="15,3"
-                    Background="#28a745" Foreground="White" />
-            <Button Content="Open" Padding="15,3"
-                    Background="#3e3e42" Foreground="#d4d4d4" />
-        </StackPanel>
-    </Border>
-
-    <Grid Grid.Row="2" Margin="12">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="400" MinWidth="200" MaxWidth="800" />
-            <ColumnDefinition Width="4" />
-            <ColumnDefinition Width="*" MinWidth="300" />
-        </Grid.ColumnDefinitions>
-
-        <!-- CODE EDITOR -->
-        <Border Grid.Column="0">
-            <TextBox Name="CodeEditor" AcceptsReturn="True" AcceptsTab="True" 
-                     BorderThickness="0"  Background="Transparent" Foreground="#d4d4d4"
-                     FontFamily="Consolas,Monospace" Padding="10"
-                     Text="{Binding CodeEditorContent, Mode=TwoWay}" Watermark="turtle.Move(25)" />
+    <Grid RowDefinitions="32, Auto, *">
+        
+        <Border Grid.Row="0" Name="Titlebar" 
+                PointerPressed="Titlebar_PointerPressed"
+                Background="#2d2d2d" Height="32"
+                BorderBrush="#3e3e42" BorderThickness="0,0,0,1">
+            <TextBlock Text="cheluan"
+                       Margin="12,0,0,0" 
+                       VerticalAlignment="Center"
+                       Foreground="#888888" 
+                       FontWeight="SemiBold" />
         </Border>
 
-        <GridSplitter Grid.Column="1" Background="#2d2d2d" ResizeDirection="Columns"/>
-
-        <!-- VISUALIZER -->
-        <Border Grid.Column="2">
-            <Viewbox Stretch="Uniform">
-                <Canvas Name="TurtleCanvas" Background="Transparent"
-                        Width="800" Height="800" />
-            </Viewbox>
+        <Border Grid.Row="1" Background="#252526" Padding="10">
+            <!-- ACTION BUTTONS (we're severely missing icons..) -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="8">
+                <Button Content="Run" 
+                        Command="{Binding ExecuteCodeCommand}" 
+                        CommandParameter="{Binding #CodeEditor}"
+                        Background="#28a745" Foreground="White" 
+                        Padding="20,5" CornerRadius="4" FontWeight="Bold"/>
+                
+                <Button Content="Open" 
+                        Background="#3e3e42" Foreground="#d4d4d4" 
+                        Padding="15,5" CornerRadius="4"/>
+                
+                <CheckBox Content="Auto Clear" 
+                          IsChecked="{Binding AutoClear}" 
+                          Foreground="#cccccc" Margin="10,0"/>
+            </StackPanel>
         </Border>
+
+        <Grid Grid.Row="2" Margin="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="400" MinWidth="200" MaxWidth="800" />
+                <ColumnDefinition Width="2" />
+                <ColumnDefinition Width="*" MinWidth="300" />
+            </Grid.ColumnDefinitions>
+
+            <!-- LUA CODE EDITOR -->
+            <Border Grid.Column="0" Background="#1e1e1e" CornerRadius="2">
+                <AvaloniaEdit:TextEditor Name="CodeEditor" 
+                                         SyntaxHighlighting="Lua"
+                                         ShowLineNumbers="True"
+                                         LineNumbersMargin="8,0,8,0"
+                                         WordWrap="True"
+                                         FontFamily="Consolas,Menlo,Monospace" />
+            </Border>
+
+            <GridSplitter Grid.Column="1" Background="#2d2d2d" ResizeDirection="Columns"/>
+
+            <!-- VISUALIZER -->
+            <Border Grid.Column="2" ClipToBounds="True">
+                <Grid>
+                    <Viewbox Stretch="Uniform">
+                        <Canvas Name="TurtleCanvas" Background="Transparent" Width="800" Height="800" />
+                    </Viewbox>
+
+
+                    <!-- BOTTOM-RIGHT NOTIFICIATION  -->
+                    <Border IsVisible="{Binding Notification.IsVisible}"
+                            VerticalAlignment="Bottom" HorizontalAlignment="Right"
+                            Margin="20" Padding="12,8" CornerRadius="4"
+                            IsHitTestVisible="False" Opacity="0.95"
+                            BorderThickness="1">
+                        
+                        <Border.Styles>
+                            <Style Selector="Border">
+                                <Setter Property="Background" Value="#45634d"/>
+                                <Setter Property="BorderBrush" Value="#78ab85"/>
+                            </Style>
+                            <Style Selector="Border[Tag=True]">
+                                <Setter Property="Background" Value="#b34f4f"/>
+                                <Setter Property="BorderBrush" Value="#d66b6b"/>
+                            </Style>
+                        </Border.Styles>
+
+                        <Border.Tag>
+                            <Binding Path="Notification.IsError"/>
+                        </Border.Tag>
+
+                        <TextBlock Text="{Binding Notification.NotificationMessage}"
+                                   Foreground="White"
+                                   FontWeight="SemiBold"
+                                   FontSize="12"/>
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
     </Grid>
-</Grid>
-
 </Window>

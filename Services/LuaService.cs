@@ -35,6 +35,11 @@ public class LuaService : ILuaService
 
     public Result ExecuteCode(string code)
     {
+        if (code is null || code.IsWhiteSpace())
+        {
+            return Result.Fail("No code to execute");
+        }
+
         try
         {
             _Lua.DoString(code);

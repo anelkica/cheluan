@@ -1,4 +1,5 @@
-﻿using cheluan.Models;
+﻿using AvaloniaEdit;
+using cheluan.Models;
 using cheluan.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -8,14 +9,19 @@ namespace cheluan.ViewModels
 {
     public partial class MainWindowViewModel : ViewModelBase
     {
+        public INotificationService Notification { get; }
+
         private readonly ILuaService _luaService;
         public readonly Turtle TurtleEngine;
 
-        [ObservableProperty]
-        private string _codeEditorContent;
+        public Action? RequestClearCanvas { get; set; }
 
-        public MainWindowViewModel(ILuaService luaService, Turtle turtle)
+        [ObservableProperty]
+        private bool _autoClear = false;
+
+        public MainWindowViewModel(INotificationService notificationService, ILuaService luaService, Turtle turtle)
         {
+            Notification = notificationService;
             _luaService = luaService;
             TurtleEngine = turtle;
 
@@ -25,14 +31,22 @@ namespace cheluan.ViewModels
         }
 
         [RelayCommand]
-        public void ExecuteCode()
+        public async void ExecuteCode(TextEditor CodeEditor)
         {
-            Result result = _luaService.ExecuteCode(CodeEditorContent);
+            if (AutoClear) // automatically clear canvas
+            {
+                RequestClearCanvas?.Invoke();
+            }
+
+            Result result = _luaService.ExecuteCode(CodeEditor.Text);
 
             if (result.Failed)
             {
                 Console.WriteLine($"ERROR: {result.Error}");
             }
+
+            
+            await Notification.NotifyAsync(result, "Turtle Moved!");
         }
     }
 }

@@ -22,12 +22,12 @@ public class TurtleRenderer
 
     public void DrawStep(TurtleStep step)
     {
-        var start = new Point(step.StartX, step.StartY);
-        var end = new Point(step.EndX, step.EndY);
+        Point start = new Point(step.StartX, step.StartY);
+        Point end = new Point(step.EndX, step.EndY);
 
         Dispatcher.UIThread.Post(() =>
         {
-            var line = new Line
+            Line line = new Line
             {
                 StartPoint = start,
                 EndPoint = end,
@@ -38,6 +38,7 @@ public class TurtleRenderer
                 StrokeJoin = PenLineJoin.Round,
                 StrokeLineCap = PenLineCap.Round
             };
+
             _canvas.Children.Add(line);
         });
     }
