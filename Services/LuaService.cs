@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Platform.Storage;
+using MoonSharp.Interpreter.Interop;
 
 namespace cheluan.Services;
 
@@ -14,6 +15,7 @@ public class LuaService : ILuaService
     public LuaService(Turtle turtle)
     {
         _turtle = turtle;
+
         UserData.RegisterType<Turtle>();
     }
 

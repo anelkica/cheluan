@@ -19,14 +19,5 @@ Load `.lua` scripts or code them in the application to see changes instantly!
 - Light theme
 - Output console
 
-## 🎯 Todo
-- [x] ~~Embedding Lua~~
-- [x] ~~Hot reload~~
-- [x] ~~Turtle graphics (move, turn)~~ 
-- [x] ~~Syntax highlighting~~
-- [x] ~~File save/load~~
-- [ ] Turtle penUp, penDown and color
-- [ ] Canvas recoloring command
-
 ## 📸 Screenshots
 ![demo](https://github.com/user-attachments/assets/f82ae016-cf5d-41c9-b858-c02c76717697)
