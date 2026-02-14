@@ -22,8 +22,8 @@ public class TurtleRenderer
 
     public void DrawStep(TurtleStep step)
     {
-        Point start = new Point(step.StartX, step.StartY);
-        Point end = new Point(step.EndX, step.EndY);
+        Point start = step.startPos;
+        Point end = step.endPos;
 
         Dispatcher.UIThread.Post(() =>
         {

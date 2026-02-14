@@ -1,11 +1,16 @@
-﻿using AvaloniaEdit;
+﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Platform.Storage;
+using AvaloniaEdit;
 using cheluan.Models;
 using cheluan.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace cheluan.ViewModels    
+namespace cheluan.ViewModels
 {
     public partial class MainWindowViewModel : ViewModelBase
     {
@@ -14,39 +19,129 @@ namespace cheluan.ViewModels
         private readonly ILuaService _luaService;
         public readonly Turtle TurtleEngine;
 
-        public Action? RequestClearCanvas { get; set; }
+        // these properties are set by MainView
+        public TextEditor? CodeEditor { get; set; }
+        public Visual? VisualRoot { get; set; } // needed for TopLevel StorageProvider access
 
-        [ObservableProperty]
-        private bool _autoClear = false;
+        // if the file is opened/existing, don't create unneeded save file dialogs
+        private IStorageFile? _currentFile;
+
+        // for the MainWindow, clearing canvas
+        public event Action? ClearCanvasRequested;
+
+        [ObservableProperty] private string _titlebarText = "cheluan"; // ─
+        [ObservableProperty] private bool _saved = true; //  false when user types in editor (MainWindow)
+        [ObservableProperty] private bool _autoClear = false;
+
+        partial void OnSavedChanged(bool value) => UpdateTitlebar();
 
         public MainWindowViewModel(INotificationService notificationService, ILuaService luaService, Turtle turtle)
         {
             Notification = notificationService;
             _luaService = luaService;
             TurtleEngine = turtle;
+        }
 
-            TurtleEngine.X = 400;
-            TurtleEngine.Y = 400;
-            TurtleEngine.Angle = 0;
+        // -- HELPERS -- //
+        private void UpdateTitlebar()
+        {
+            string filename = _currentFile?.Name ?? "untitled";
+            string unsavedMarker = !Saved ? "*" : "";
+
+            TitlebarText = $"{filename}{unsavedMarker} — cheluan";
+        }
+
+        // -- UI HANDLERS -- //
+
+        [RelayCommand]
+        public async Task RequestCanvasClear() => ClearCanvasRequested?.Invoke();
+
+        [RelayCommand]
+        public async Task ExecuteCodeFromEditor()
+        {
+            if (CodeEditor is null)
+            {
+                await Notification.NotifyAsync(Result.Fail("Code editor isn't loaded"));
+                return;
+            }
+
+            if (AutoClear)
+                ClearCanvasRequested?.Invoke();
+
+            Result result = _luaService.ExecuteCode(CodeEditor.Text);
+            if (result.Failed)
+            {
+                await Notification.NotifyAsync(result);
+                return;
+            }
+
+            //await Notification.NotifyAsync(result, "Successfully ran.");
         }
 
         [RelayCommand]
-        public async void ExecuteCode(TextEditor CodeEditor)
+        public async Task OpenFileAsync()
         {
-            if (AutoClear) // automatically clear canvas
+            TopLevel? topLevel = TopLevel.GetTopLevel(VisualRoot);
+            if (topLevel is null) return;
+
+            IReadOnlyList<IStorageFile> files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
-                RequestClearCanvas?.Invoke();
-            }
+                Title = "Open Lua Script",
+                FileTypeFilter = [new FilePickerFileType("Lua Files") { Patterns = ["*.lua"] }],
+                AllowMultiple = false
+            });
 
-            Result result = _luaService.ExecuteCode(CodeEditor.Text);
+            if (files is not { Count: > 0 }) return;
 
-            if (result.Failed)
+            _currentFile = files[0];
+
+            Result<string> result = await _luaService.ReadScriptFileAsync(_currentFile);
+            if (result.Success)
+                CodeEditor?.Text = result.Value ?? ""; // null content? default to ""
+
+            Saved = true; // refactor later im tired
+        }
+
+        [RelayCommand]
+        public async Task SaveFileAsync() // it fires on CTRL+S too
+        {
+            if (CodeEditor is null) return;
+
+            if (_currentFile != null)
+                await _luaService.SaveScriptFileAsync(_currentFile, CodeEditor?.Text ?? "");
+            else
+                await SaveAsFileAsync();  // file doesn't exist? do Save As
+
+            Saved = true;
+            await ExecuteCodeFromEditor();
+        }
+
+        [RelayCommand]
+        public async Task SaveAsFileAsync()
+        {
+            TopLevel? topLevel = TopLevel.GetTopLevel(VisualRoot);
+            if (topLevel == null) return;
+
+
+            FilePickerFileType luaFileType = new FilePickerFileType("Lua Scripts")
             {
-                Console.WriteLine($"ERROR: {result.Error}");
-            }
+                Patterns = ["*.lua"],
+                MimeTypes = ["text/x-lua", "text/plain"]
+            };
 
-            
-            await Notification.NotifyAsync(result, "Turtle Moved!");
+            IStorageFile? file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            {
+                Title = "Save Lua Script",
+                DefaultExtension = ".lua",
+                SuggestedFileName = "script.lua",
+                FileTypeChoices = [luaFileType]
+            });
+
+            if (file is null) return;
+
+            _currentFile = file;
+
+            await _luaService.SaveScriptFileAsync(_currentFile, CodeEditor?.Text ?? "");
         }
     }
 }

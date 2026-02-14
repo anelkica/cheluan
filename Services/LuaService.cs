@@ -2,30 +2,55 @@
 using MoonSharp.Interpreter;
 using System;
 using System.IO;
+using System.Threading.Tasks;
+using Avalonia.Platform.Storage;
 
 namespace cheluan.Services;
 
 public class LuaService : ILuaService
 {
-    private readonly Script _Lua;
     private readonly Turtle _turtle;
 
     public LuaService(Turtle turtle)
     {
-        _Lua = new Script();
         _turtle = turtle;
-
-        UserData.RegisterType<Turtle>(); // register turtle type in Lua
-
-        _Lua.Globals["turtle"] = _turtle; // expose it to Lua
+        UserData.RegisterType<Turtle>();
     }
 
-    public Result<string> ReadScript(string filePath)
+    public Result ExecuteCode(string code)
     {
+        if (string.IsNullOrWhiteSpace(code))
+            return Result.Fail("No code to execute");
+
         try
         {
-            string code = File.ReadAllText(filePath);
-            return Result<string>.Ok(code);
+            Script script = new();
+            script.Globals["turtle"] = _turtle;
+            script.DoString(code);
+            return Result.Ok();
+        }
+        catch (InterpreterException e)
+        {
+            return Result.Fail($"Lua Interpreter Error: {e.DecoratedMessage}");
+        }
+        catch (Exception e)
+        {
+            return Result.Fail($"Failed to execute Lua: {e.Message}");
+        }
+    }
+
+    public async Task<Result<string>> ReadScriptFileAsync(IStorageFile file)
+    {
+        if (file == null)
+            return Result<string>.Fail("No file selected");
+
+        try
+        {
+            await using Stream stream = await file.OpenReadAsync();
+            using StreamReader reader = new(stream);
+            string content = await reader.ReadToEndAsync();
+
+            return Result<string>.Ok(content);
         }
         catch (Exception e)
         {
@@ -33,26 +58,24 @@ public class LuaService : ILuaService
         }
     }
 
-    public Result ExecuteCode(string code)
+    public async Task<Result> SaveScriptFileAsync(IStorageFile file, string content)
     {
-        if (code is null || code.IsWhiteSpace())
-        {
-            return Result.Fail("No code to execute");
-        }
+        if (file == null)
+            return Result.Fail("No destination file selected");
+
+        content ??= "";
 
         try
         {
-            _Lua.DoString(code);
+            await using Stream stream = await file.OpenWriteAsync();
+            await using StreamWriter writer = new(stream);
+            await writer.WriteAsync(content);
+
             return Result.Ok();
-        }
-        catch (InterpreterException e)
-        {
-            // lua specific
-            return Result.Fail($"Lua Interpreter Error: {e.DecoratedMessage}");
         }
         catch (Exception e)
         {
-            return Result.Fail($"Failed to execute Lua: {e.Message}");
+            return Result.Fail($"Failed to save script: {e.Message}");
         }
     }
 }

@@ -1,31 +1,53 @@
-﻿using MoonSharp.Interpreter;
+﻿using Avalonia;
+using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using System;
 
 namespace cheluan.Models;
 
+/*
+    TODO:
+        (turtle): color, penUp, penDown
+        (canvas): bg, scale(?)
+*/
+
 // a record tracking the movement of the turtle from start to end of a line
-public record TurtleStep(double StartX, double StartY, double EndX, double EndY);
+public record TurtleStep(Point startPos, Point endPos);
 
 [MoonSharpUserData]
 public class Turtle
 {
-    public double X { get; set; }
-    public double Y { get; set; }
+    public Point Position { get; set; }
+    public Size Bounds { get; set; } // safety against crossing the available canvas
     public double Angle { get; set; }
+    public double AngleRadians => Angle * Math.PI / 180;
 
     public Action<TurtleStep>? OnMove;
+
+    public void Reset()
+    {
+        // centers the turtle
+        Position = new(Bounds.Width / 2, Bounds.Height / 2);
+        Angle = 0;
+    }
 
     // move forwards
     public Result Move(double distance)
     {
-        double oldX = X;
-        double oldY = Y;
+        Point oldPos = Position;
 
-        X += distance * Math.Cos(Angle * Math.PI / 180);
-        Y += distance * Math.Sin(Angle * Math.PI / 180);
+        double dx = distance * Math.Cos(AngleRadians);
+        double dy = distance * Math.Sin(AngleRadians);
 
-        OnMove?.Invoke(new TurtleStep(oldX, oldY, X, Y));
+        Point newPos = new(Position.X + dx, Position.Y + dy);
+
+        if (newPos.X < 0 || newPos.X > Bounds.Width || newPos.Y < 0 || newPos.Y > Bounds.Height)
+        {
+            return Result.Fail($"Turtle out of bounds: ({newPos.X:F1},{newPos.Y:F1})! Bounds: ({Bounds.Width},{Bounds.Height})");
+        }
+
+        Position = newPos;
+        OnMove?.Invoke(new TurtleStep(oldPos, newPos));
 
         return Result.Ok();
     }
@@ -33,14 +55,6 @@ public class Turtle
     public void Turn(double degrees)
     {
         Angle += degrees;
-    }
-
-    public void Reset(double x, double y) 
-    {
-        X = x;
-        Y = y;
-        Angle = 0;
-        
     }
 
     [MoonSharpVisible(true)]

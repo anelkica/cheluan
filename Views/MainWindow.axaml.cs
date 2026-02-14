@@ -1,9 +1,13 @@
 using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using AvaloniaEdit.TextMate;
-using TextMateSharp.Grammars;
 using cheluan.Models;
 using cheluan.ViewModels;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using TextMateSharp.Grammars;
 
 namespace cheluan.Views
@@ -11,9 +15,7 @@ namespace cheluan.Views
     public partial class MainWindow : Window
     {
         private TextMate.Installation _textMateInstallation;
-        private readonly TurtleRenderer _renderer;
-
-        public Action? RequestClearCanvas { get; set; }
+        private readonly TurtleRenderer _turtleRenderer;
 
         public MainWindow()
         {
@@ -23,7 +25,7 @@ namespace cheluan.Views
             _textMateInstallation = CodeEditor.InstallTextMate(registryOptions);
             _textMateInstallation.SetGrammar(registryOptions.GetScopeByLanguageId("lua"));
 
-            _renderer = new TurtleRenderer(TurtleCanvas);
+            _turtleRenderer = new TurtleRenderer(TurtleCanvas);
         }
 
         protected override void OnOpened(EventArgs e)
@@ -32,20 +34,36 @@ namespace cheluan.Views
 
             if (DataContext is not MainWindowViewModel vm) return;
 
+            vm.VisualRoot = this;
+            vm.CodeEditor = CodeEditor;
+
             Turtle turtle = vm.TurtleEngine;
 
-            vm.RequestClearCanvas = _renderer.Clear;
-            turtle.OnMove = _renderer.DrawStep;
+            turtle.Bounds = new(TurtleCanvas.Width, TurtleCanvas.Height);
+            turtle.Reset();
 
+            vm.ClearCanvasRequested += OnClearCanvasRequested;
+            turtle.OnMove += _turtleRenderer.DrawStep;
+
+            CodeEditor.TextChanged += (s, e) => vm.Saved = false;
         }
 
-        // diy titlebar
-        private void Titlebar_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+        // -- UI HANDLERS -- //
+
+        // diy titlebar drag mechanics
+        private void Titlebar_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
             if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
-            {
                 BeginMoveDrag(e);
-            }
+        }
+
+        // -- HELPERS -- //
+        private void OnClearCanvasRequested()
+        {
+            if (DataContext is not MainWindowViewModel vm) return;
+
+            vm.TurtleEngine.Reset();
+            _turtleRenderer.Clear();
         }
     }
 }

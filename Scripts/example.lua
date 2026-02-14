@@ -1,1 +1,0 @@
-turtle.Move(50)
