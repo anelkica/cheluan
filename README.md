@@ -5,7 +5,7 @@ A C# turtle graphics playground with embedded Lua for controlling the turtle.
 
 Load `.lua` scripts or code them in the application to see changes instantly!
 
-[⟹ See screenshots!](#-showcase)
+[⟹ See screenshots!](#-screenshots)
 
 ## ✨ Features
 - Live scripting: write Lua code to draw on the canvas
