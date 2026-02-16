@@ -26,6 +26,8 @@ public class Turtle
     {
         Position = new(Bounds.Width / 2, Bounds.Height / 2); // centers the turtle
         Angle = 0;
+
+        PenSize = 2;
         IsPenDown = true;
     }
 

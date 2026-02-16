@@ -20,4 +20,4 @@ Load `.lua` scripts or code them in the application to see changes instantly!
 - Output console
 
 ## 📸 Screenshots
-![demo](https://github.com/user-attachments/assets/f82ae016-cf5d-41c9-b858-c02c76717697)
+![demo](https://github.com/user-attachments/assets/f193cd3c-1be5-470b-b209-37761a224548)

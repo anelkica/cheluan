@@ -1,0 +1,126 @@
+<Styles xmlns="https://github.com/avaloniaui"
+		xmlns:AvaloniaEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Style Selector="Button">
+		<Setter Property="VerticalAlignment" Value="Stretch"/>
+		<Setter Property="VerticalContentAlignment" Value="Center"/>
+		<Setter Property="HorizontalContentAlignment" Value="Center"/>
+		<Setter Property="Padding" Value="20,0"/>
+		<Setter Property="FontSize" Value="13"/>
+		<Setter Property="CornerRadius" Value="0" />
+		<Setter Property="BorderThickness" Value="0"/>
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="Foreground" Value="#CCCCCC"/>
+		<Setter Property="RenderTransform" Value="scale(1.0)"/>
+
+		<Setter Property="Transitions">
+			<Transitions>
+				<TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.06" Easing="CubicEaseOut"/>
+			</Transitions>
+		</Setter>
+
+		<Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent"/>
+		</Style>
+
+		<Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="{DynamicResource WhiteBrush10}"/>
+			<Setter Property="Foreground" Value="White"/>
+		</Style>
+
+		<Style Selector="^:pressed">
+			<Setter Property="RenderTransform" Value="scale(0.97)"/>
+			<Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+				<Setter Property="Background" Value="{DynamicResource WhiteBrush10}"/>
+			</Style>
+		</Style>
+	</Style>
+
+	<Style Selector="Button.Exit">
+		<Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="{DynamicResource DangerBrush}"/>
+			<Setter Property="Foreground" Value="White"/>
+		</Style>
+
+		<Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="{DynamicResource DangerLightBrush}"/>
+			<Setter Property="Foreground" Value="White"/>
+		</Style>
+	</Style>
+
+	<Style Selector="Button.Run">
+		<Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+		<Setter Property="Foreground" Value="#F2F2F2"/>
+		<Setter Property="FontWeight" Value="Bold"/>
+
+		<Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="{DynamicResource AccentHoverBrush}"/>
+			<Setter Property="Foreground" Value="White"/>
+		</Style>
+
+		<Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="{DynamicResource AccentPressedBrush}"/>
+			<Setter Property="Foreground" Value="White"/>
+		</Style>
+	</Style>
+
+	<Style Selector="Button.Tool">
+		<Setter Property="Background" Value="Transparent"/>
+		<Setter Property="Foreground" Value="#AAAAAA"/>
+		<Setter Property="FontFamily" Value="Cascadia Code, JetBrains Mono, monospace"/>
+		<Setter Property="FontSize" Value="12"/>
+
+		<Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent"/>
+		</Style>
+
+		<Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#2A2A2A"/>
+			<Setter Property="Foreground" Value="#F2F2F2"/>
+		</Style>
+
+		<Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="{DynamicResource BlackBrush10}"/>
+			<Setter Property="Foreground" Value="White"/>
+		</Style>
+	</Style>
+
+	<!-- https://github.com/AvaloniaUI/Avalonia/blob/master/src/Avalonia.Themes.Simple/Controls/MenuItem.xaml -->
+
+	<Style Selector="MenuFlyoutPresenter">
+		<Setter Property="Background" Value="#1E1E1E"/>
+		<Setter Property="BorderBrush" Value="#333333"/>
+		<Setter Property="BorderThickness" Value="1"/>
+		<Setter Property="Padding" Value="0,4"/>
+		<Setter Property="CornerRadius" Value="0"/>
+	</Style>
+
+	<Style Selector="MenuItem">
+		<Setter Property="FontSize" Value="12"/>
+		<Setter Property="Foreground" Value="#AAAAAA"/>
+		<Setter Property="FontFamily" Value="Cascadia Code, JetBrains Mono, monospace"/>
+		<Setter Property="Padding" Value="10,6"/>
+
+		<Style Selector="^:selected /template/ Border#root">
+			<Setter Property="Background" Value="#1A3D29"/>
+			<Setter Property="BorderBrush" Value="#2FC46D"/>
+		</Style>
+	</Style>
+
+	<Style Selector="Separator">
+		<Setter Property="Background" Value="#333333"/>
+		<Setter Property="Height" Value="1"/>
+		<Setter Property="Margin" Value="0,4"/>
+	</Style>
+
+	<!-- https://github.com/AvaloniaUI/Avalonia/blob/master/src/Avalonia.Themes.Simple/Controls/ToggleSwitch.xaml -->
+	<Style Selector="ToggleSwitch">
+		<Setter Property="UseLayoutRounding" Value="False" /> <!-- causes jagged lines when set to True -->
+
+		<Style Selector="^:checked /template/ Border#SwitchKnobBounds">
+			<Setter Property="Background" Value="{DynamicResource Accent}"></Setter>
+		</Style>
+	</Style>
+
+</Styles>

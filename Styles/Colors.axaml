@@ -1,0 +1,34 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Color x:Key="TextPrimary">#AAAAAA</Color>
+
+    <Color x:Key="Accent">#27AE60</Color>
+    <Color x:Key="AccentHover">#32D97B</Color>
+    <Color x:Key="AccentPressed">#1E8449</Color>
+
+    <Color x:Key="Danger">#C42B1C</Color>
+    <Color x:Key="DangerLight">#D15549</Color>
+
+    <Color x:Key="White10">#1AFFFFFF</Color>
+    <Color x:Key="White20">#33FFFFFF</Color>
+
+    <Color x:Key="Black10">#1A000000</Color>
+    <Color x:Key="Black20">#33000000</Color>
+
+
+    <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource Accent}" />
+    <SolidColorBrush x:Key="AccentHoverBrush" Color="{StaticResource AccentHover}" />
+    <SolidColorBrush x:Key="AccentPressedBrush" Color="{StaticResource AccentPressed}" />
+
+    <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource Danger}" />
+    <SolidColorBrush x:Key="DangerLightBrush" Color="{StaticResource DangerLight}" />
+
+
+    <SolidColorBrush x:Key="WhiteBrush10" Color="{StaticResource White10}" />
+    <SolidColorBrush x:Key="WhiteBrush20" Color="{StaticResource White20}" />
+
+    <SolidColorBrush x:Key="BlackBrush10" Color="{StaticResource Black10}" />
+    <SolidColorBrush x:Key="BlackBrush20" Color="{StaticResource Black20}" />
+
+</ResourceDictionary>
