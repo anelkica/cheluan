@@ -31,6 +31,7 @@ namespace cheluan.ViewModels
 
         // for the MainWindow, clearing canvas
         public event Action? ClearCanvasRequested;
+        public event Action? ExportCanvasRequested;
 
         [ObservableProperty] private string _titlebarText = "cheluan"; // ─
         [ObservableProperty] private bool _saved = true; //  false when user types in editor (MainWindow)
@@ -69,6 +70,10 @@ namespace cheluan.ViewModels
 
         // -- UI HANDLERS -- //
         [RelayCommand]
+        public async Task RequestCanvasExport()
+            => ExportCanvasRequested?.Invoke();
+
+        [RelayCommand]
         public async Task RequestCanvasClear()
         {
             Turtles.Clear();
@@ -96,8 +101,6 @@ namespace cheluan.ViewModels
                 await Notification.NotifyAsync(result);
                 return;
             }
-
-            //await Notification.NotifyAsync(result, "Successfully ran.");
         }
 
         [RelayCommand]
@@ -107,6 +110,8 @@ namespace cheluan.ViewModels
 
             if (CodeEditor is not null)
                 CodeEditor?.Text = "";
+
+            await Notification.NotifyAsync(Result.Ok(), "Created new file!");
 
             _currentFile = null;
             Saved = false;
@@ -135,6 +140,8 @@ namespace cheluan.ViewModels
             if (result.Success)
                 CodeEditor?.Text = result.Value ?? ""; // null content? default to ""
 
+            await Notification.NotifyAsync(Result.Ok(), $"Opened {_currentFile.Name}");
+
             Saved = true; // refactor later im tired
             await RequestCanvasClear();
         }
@@ -148,6 +155,8 @@ namespace cheluan.ViewModels
                 await _luaService.SaveScriptFileAsync(_currentFile, CodeEditor?.Text ?? "");
             else
                 await SaveAsFileAsync();  // file doesn't exist? do Save As
+
+            await Notification.NotifyAsync(Result.Ok(), "Saved!");
 
             Saved = true;
             await ExecuteCodeFromEditor();

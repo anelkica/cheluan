@@ -73,7 +73,7 @@
 								<MenuItem Header="Open..." Command="{Binding OpenFileAsync}" />
 								<MenuItem Header="Save" Command="{Binding SaveFileAsync}" />
 								<Separator />
-								<MenuItem Header="Export Canvas" />
+								<MenuItem Header="Export Canvas" Command="{Binding RequestCanvasExport}" />
 							</MenuFlyout>
 						</Button.Flyout>
 					</Button>
@@ -137,11 +137,12 @@
 								IsHitTestVisible="False" Opacity="0.95">
 							<Border.Styles>
 								<Style Selector="Border">
-									<Setter Property="Background" Value="#252526"/>
+									<Setter Property="Background" Value="#45634d"/>
 									<Setter Property="BorderBrush" Value="#45634d"/>
 									<Setter Property="BorderThickness" Value="1"/>
 								</Style>
 								<Style Selector="Border[Tag=True]">
+									<Setter Property="Background" Value="#b34f4f"/>
 									<Setter Property="BorderBrush" Value="#b34f4f"/>
 								</Style>
 							</Border.Styles>
@@ -149,7 +150,7 @@
 								<Binding Path="Notification.IsError"/>
 							</Border.Tag>
 							<TextBlock Text="{Binding Notification.NotificationMessage}"
-									   Foreground="White" FontSize="12" FontWeight="SemiBold"/>
+									   Foreground="White" FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap"/>
 						</Border>
 					</Panel>
 				</Grid>

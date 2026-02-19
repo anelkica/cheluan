@@ -1,7 +1,9 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using AvaloniaEdit.TextMate;
 using cheluan.Models;
@@ -37,10 +39,12 @@ namespace cheluan.Views
 
             vm.VisualRoot = this;
             vm.CodeEditor = CodeEditor;
+
             vm.ClearCanvasRequested += OnClearCanvasRequested;
-            vm.TurtleCreated += SetupTurtle;
+            vm.ExportCanvasRequested += OnExportCanvasRequested;
 
             SetupTurtle(vm.MainTurtle);
+            vm.TurtleCreated += SetupTurtle;
 
             CodeEditor.TextChanged += (s, e) => vm.Saved = false;
             PropertyChanged += (s, e) =>
@@ -61,13 +65,35 @@ namespace cheluan.Views
             turtle.OnMove += _turtleRenderer.DrawStep;
         }
 
-
         private void OnClearCanvasRequested()
         {
             if (DataContext is not MainWindowViewModel vm) return;
 
             vm.MainTurtle.Reset();
             _turtleRenderer.Clear();
+        }
+
+        private async void OnExportCanvasRequested()
+        {
+            IStorageFile? file = await this.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            {
+                Title = "Export Canvas",
+                DefaultExtension = ".png",
+                SuggestedFileName = "export.png",
+                FileTypeChoices = [new FilePickerFileType("PNG Image") { Patterns = ["*.png"] }]
+            });
+
+            if (file is null) return;
+
+            PixelSize canvasPixelSize = new((int)TurtleCanvas.Width, (int)TurtleCanvas.Height);
+            using RenderTargetBitmap bitmap = new(canvasPixelSize, new Vector(96, 96));
+
+            bitmap.Render(TurtleCanvas);
+
+            using Stream stream = await file.OpenWriteAsync();
+            bitmap.Save(stream);
+
+            // add a notification here??
         }
 
         // for adjusting maximized titlebar height (especially for people with top-screen taskbars)
@@ -98,7 +124,6 @@ namespace cheluan.Views
             WindowState = WindowState.Minimized;
         }
 
-        // CHANGED: maximize/restore button handler
         private void MaximizeButton_Click(object? sender, RoutedEventArgs e)
         {
             WindowState = WindowState == WindowState.Maximized 
@@ -106,7 +131,6 @@ namespace cheluan.Views
                 : WindowState.Maximized;
         }
 
-        // CHANGED: close button handler
         private void CloseButton_Click(object? sender, RoutedEventArgs e)
         {
             Close();

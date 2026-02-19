@@ -32,7 +32,7 @@ public class Turtle
     }
 
     // move forwards
-    public Result Move(double distance)
+    public void Move(double distance)
     {
         Point oldPos = Position;
 
@@ -42,41 +42,36 @@ public class Turtle
         Point newPos = new(Position.X + dx, Position.Y + dy);
 
         if (newPos.X < 0 || newPos.Y < 0 || newPos.X > Bounds.Width || newPos.Y > Bounds.Height)
-            return Result.Fail($"Turtle out of bounds: ({newPos.X:F1},{newPos.Y:F1})! Bounds: ({Bounds.Width},{Bounds.Height})");
+            throw new Exception($"Turtle out of bounds: ({newPos.X:F1},{newPos.Y:F1})! Bounds: ({Bounds.Width},{Bounds.Height})");
 
         Position = newPos;
 
         if (IsPenDown)
             OnMove?.Invoke(new TurtleStep(oldPos, newPos, PenColor, PenSize));
-
-        return Result.Ok();
     }
 
-    public Result Teleport(double localCoordinateX, double localCoordinateY)
+    public void Teleport(double localCoordinateX, double localCoordinateY)
     {
         // convert to absolute/canvas coordinates, bcuz local (0,0) means (200,200) in absolute cords (default canvas is 400x400)
         double canvasX = (Bounds.Width / 2) + localCoordinateX;
         double canvasY = (Bounds.Height / 2) - localCoordinateY; // invert Y so it goes up on the screen
 
         if (canvasX < 0 || canvasX > Bounds.Width || canvasY < 0 || canvasY > Bounds.Height)
-            return Result.Fail($"Position ({canvasX}, {canvasY}) is outside the visible area");
+            throw new Exception($"Position ({localCoordinateX}, {localCoordinateY}) is outside the visible area");
 
         Position = new Point(canvasX, canvasY);
-        return Result.Ok();
     }
 
-    public Result Color(string? hex)
+    public void Color(string? hex)
     {
         if (string.IsNullOrWhiteSpace(hex))
-            return Result.Fail("Hex color is undefined");
+            throw new Exception("Hex color is undefined");
 
         if (!hex.StartsWith("#")) // RRGGBB format maybe?
             hex = "#" + hex;
 
         if (hex.Length == 7 || hex.Length == 9) // #RRGGBB || #AARRGGBB
             PenColor = hex;
-
-        return Result.Ok();
     }
 
     public void Turn(double degrees) => SetAngle(Angle + degrees); // relative turning
