@@ -12,6 +12,10 @@ public class LuaService : ILuaService
 {
     private readonly Turtle _turtle;
 
+    private Func<Turtle>? _turtleSpawner; // hook for MainWindowViewModel, for spawning and tracking new turtles
+    public void RegisterSpawner(Func<Turtle> spawner) => _turtleSpawner = spawner;
+
+
     public LuaService(Turtle turtle)
     {
         _turtle = turtle;
@@ -27,7 +31,16 @@ public class LuaService : ILuaService
         try
         {
             Script script = new();
+
             script.Globals["turtle"] = _turtle;
+            if (_turtleSpawner != null)
+            {
+                Table turtleClass = new(script);
+                turtleClass["spawn"] = (Func<Turtle>)(() => _turtleSpawner());
+
+                script.Globals["TurtleSpawner"] = turtleClass;
+            }
+
             script.DoString(code);
             return Result.Ok();
         }

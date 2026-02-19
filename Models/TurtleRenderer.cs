@@ -30,18 +30,18 @@ public class TurtleRenderer
 
     public async void DrawStep(TurtleStep step) // connected in MainWindow on turtle.OnMove
     {
-        SolidColorBrush brush = new(Color.Parse(step.penColorHex));
+        SolidColorBrush brush = new(Color.Parse(step.PenColorHex));
 
         // local method for easier refactoring
         void drawLine()
         {
             Line line = new Line
             {
-                StartPoint = step.startPos,
-                EndPoint = step.endPos,
+                StartPoint = step.StartPoint,
+                EndPoint = step.EndPoint,
 
                 Stroke = brush,
-                StrokeThickness = step.penSize,
+                StrokeThickness = step.PenSize,
 
                 StrokeJoin = PenLineJoin.Round,
                 StrokeLineCap = PenLineCap.Round

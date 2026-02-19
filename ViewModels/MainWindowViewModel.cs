@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
 namespace cheluan.ViewModels
@@ -15,9 +16,11 @@ namespace cheluan.ViewModels
     public partial class MainWindowViewModel : ViewModelBase
     {
         public INotificationService Notification { get; }
-
         private readonly ILuaService _luaService;
-        public readonly Turtle TurtleEngine;
+
+        public event Action<Turtle>? TurtleCreated;
+        public ObservableCollection<Turtle> Turtles { get; } = new();
+        public readonly Turtle MainTurtle;
 
         // these properties are set by MainView
         public TextEditor? CodeEditor { get; set; }
@@ -31,7 +34,6 @@ namespace cheluan.ViewModels
 
         [ObservableProperty] private string _titlebarText = "cheluan"; // ─
         [ObservableProperty] private bool _saved = true; //  false when user types in editor (MainWindow)
-        [ObservableProperty] private bool _autoClear = false;
 
         partial void OnSavedChanged(bool value) => UpdateTitlebar();
 
@@ -39,22 +41,43 @@ namespace cheluan.ViewModels
         {
             Notification = notificationService;
             _luaService = luaService;
-            TurtleEngine = turtle;
+            MainTurtle = turtle;
+
+            Turtles.Add(MainTurtle);
+            luaService.RegisterSpawner(CreateNewTurtle);
         }
 
         // -- HELPERS -- //
+        public Turtle CreateNewTurtle()
+        {
+            Turtle turtle = new() { Bounds = MainTurtle.Bounds };
+            turtle.Reset();
+
+            Turtles.Add(turtle);
+            TurtleCreated?.Invoke(turtle);
+
+            return turtle;
+        }
+
         private void UpdateTitlebar()
         {
-            string filename = _currentFile?.Name ?? "untitled";
+            string filename = _currentFile?.Name ?? "untitled.lua";
             string unsavedMarker = !Saved ? "*" : "";
 
             TitlebarText = $"{filename}{unsavedMarker} — cheluan";
         }
 
         // -- UI HANDLERS -- //
-
         [RelayCommand]
-        public async Task RequestCanvasClear() => ClearCanvasRequested?.Invoke();
+        public async Task RequestCanvasClear()
+        {
+            Turtles.Clear();
+
+            MainTurtle.Reset();
+            Turtles.Add(MainTurtle);
+
+            ClearCanvasRequested?.Invoke(); // connected in MainView
+        }
 
         [RelayCommand]
         public async Task ExecuteCodeFromEditor()
@@ -65,8 +88,7 @@ namespace cheluan.ViewModels
                 return;
             }
 
-            if (AutoClear)
-                ClearCanvasRequested?.Invoke();
+            await RequestCanvasClear();
 
             Result result = _luaService.ExecuteCode(CodeEditor.Text);
             if (result.Failed)
@@ -76,6 +98,20 @@ namespace cheluan.ViewModels
             }
 
             //await Notification.NotifyAsync(result, "Successfully ran.");
+        }
+
+        [RelayCommand]
+        public async Task NewFileAsync()
+        {
+            await RequestCanvasClear();
+
+            if (CodeEditor is not null)
+                CodeEditor?.Text = "";
+
+            _currentFile = null;
+            Saved = false;
+
+            UpdateTitlebar();
         }
 
         [RelayCommand]
@@ -100,6 +136,7 @@ namespace cheluan.ViewModels
                 CodeEditor?.Text = result.Value ?? ""; // null content? default to ""
 
             Saved = true; // refactor later im tired
+            await RequestCanvasClear();
         }
 
         [RelayCommand]

@@ -60,7 +60,6 @@
 							Command="{Binding ExecuteCodeFromEditorCommand}"
 							CommandParameter="{Binding #CodeEditor}" />
 					<Button Classes="Tool" Content="Clear"
-							IsEnabled="{Binding !AutoClear}"
 							Command="{Binding RequestCanvasClearCommand}" />
 				</StackPanel>
 
@@ -70,6 +69,7 @@
 					<Button Content="File" Classes="Tool">
 						<Button.Flyout>
 							<MenuFlyout Placement="BottomEdgeAlignedLeft">
+								<MenuItem Header="New" Command="{Binding NewFileAsync}" />
 								<MenuItem Header="Open..." Command="{Binding OpenFileAsync}" />
 								<MenuItem Header="Save" Command="{Binding SaveFileAsync}" />
 								<Separator />
@@ -80,8 +80,7 @@
 				</StackPanel>
 
 				<StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
-					<ToggleSwitch IsChecked="{Binding AutoClear}" OnContent="" OffContent="" MinWidth="0" Padding="0"/>
-					<TextBlock Text="Auto Clear" VerticalAlignment="Center"/>
+					
 				</StackPanel>
 
 			</Grid>

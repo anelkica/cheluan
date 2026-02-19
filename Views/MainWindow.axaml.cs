@@ -37,17 +37,12 @@ namespace cheluan.Views
 
             vm.VisualRoot = this;
             vm.CodeEditor = CodeEditor;
-
-            Turtle turtle = vm.TurtleEngine;
-
-            turtle.Bounds = new(TurtleCanvas.Width, TurtleCanvas.Height);
-            turtle.Reset();
-
             vm.ClearCanvasRequested += OnClearCanvasRequested;
-            turtle.OnMove += _turtleRenderer.DrawStep;
+            vm.TurtleCreated += SetupTurtle;
+
+            SetupTurtle(vm.MainTurtle);
 
             CodeEditor.TextChanged += (s, e) => vm.Saved = false;
-
             PropertyChanged += (s, e) =>
             {
                 if (e.Property.Name == nameof(WindowState))
@@ -58,12 +53,20 @@ namespace cheluan.Views
         }
 
         // -- HELPERS -- //
+        private void SetupTurtle(Turtle turtle)
+        {
+            turtle.Bounds = new(TurtleCanvas.Width, TurtleCanvas.Height);
+            turtle.Reset();
+
+            turtle.OnMove += _turtleRenderer.DrawStep;
+        }
+
 
         private void OnClearCanvasRequested()
         {
             if (DataContext is not MainWindowViewModel vm) return;
 
-            vm.TurtleEngine.Reset();
+            vm.MainTurtle.Reset();
             _turtleRenderer.Clear();
         }
 
