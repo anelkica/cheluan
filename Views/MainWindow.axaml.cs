@@ -5,6 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using AvaloniaEdit.TextMate;
 using cheluan.Models;
 using cheluan.ViewModels;
@@ -17,46 +18,41 @@ namespace cheluan.Views
 {
     public partial class MainWindow : Window
     {
+        private MainWindowViewModel? vm => DataContext as MainWindowViewModel;
+
         private TextMate.Installation _textMateInstallation;
         private readonly TurtleRenderer _turtleRenderer;
+
+        private DispatcherTimer _autoRunTimer = new(); // debounce timer. resets timer each character typed
 
         public MainWindow()
         {
             InitializeComponent();
 
+            _turtleRenderer = new TurtleRenderer(TurtleCanvas);
+
             RegistryOptions registryOptions = new(ThemeName.Dracula);
             _textMateInstallation = CodeEditor.InstallTextMate(registryOptions);
             _textMateInstallation.SetGrammar(registryOptions.GetScopeByLanguageId("lua"));
-
-            _turtleRenderer = new TurtleRenderer(TurtleCanvas);
         }
 
         protected override void OnOpened(EventArgs e)
         {
             base.OnOpened(e);
 
-            if (DataContext is not MainWindowViewModel vm) return;
+            if (vm is null) return;
 
             vm.VisualRoot = this;
             vm.CodeEditor = CodeEditor;
 
-            vm.ClearCanvasRequested += OnClearCanvasRequested;
-            vm.ExportCanvasRequested += OnExportCanvasRequested;
-
             SetupTurtle(vm.MainTurtle);
-            vm.TurtleCreated += SetupTurtle;
-
-            CodeEditor.TextChanged += (s, e) => vm.Saved = false;
-            PropertyChanged += (s, e) =>
-            {
-                if (e.Property.Name == nameof(WindowState))
-                    AdjustTitlebarHeight();
-            };
+            SubscribeToEvents();
+            InitializeAutorunTimer();
 
             AdjustTitlebarHeight();
         }
 
-        // -- HELPERS -- //
+
         private void SetupTurtle(Turtle turtle)
         {
             turtle.Bounds = new(TurtleCanvas.Width, TurtleCanvas.Height);
@@ -65,11 +61,50 @@ namespace cheluan.Views
             turtle.OnMove += _turtleRenderer.DrawStep;
         }
 
+        private void SubscribeToEvents()
+        {
+            vm!.ClearCanvasRequested += OnClearCanvasRequested; // warning from IDE even though it was checked in OnOpened lol
+            vm.ExportCanvasRequested += OnExportCanvasRequested;
+            vm.TurtleCreated += SetupTurtle;
+
+            CodeEditor.TextChanged += (s, e) =>
+            {
+                vm.Saved = false;
+
+                if (!vm.Autorun) return;
+
+                // restart timer
+                _autoRunTimer.Stop();
+                _autoRunTimer.Start();
+            };
+
+            // adjust titlebar on maximize/minimize
+            PropertyChanged += (s, e) =>
+            {
+                if (e.Property.Name == nameof(WindowState))
+                    AdjustTitlebarHeight();
+            };
+        }
+
+        private void InitializeAutorunTimer()
+        {
+            _autoRunTimer = new()
+            {
+                Interval = TimeSpan.FromMilliseconds(500)
+            };
+
+            _autoRunTimer.Tick += async (s, e) => {
+                _autoRunTimer.Stop();
+
+                if (vm!.Autorun)
+                    await vm.ExecuteCodeFromEditor();
+            };
+        }
+
+
         private void OnClearCanvasRequested()
         {
-            if (DataContext is not MainWindowViewModel vm) return;
-
-            vm.MainTurtle.Reset();
+            vm!.MainTurtle.Reset();
             _turtleRenderer.Clear();
         }
 
@@ -96,44 +131,28 @@ namespace cheluan.Views
             // add a notification here??
         }
 
+
         // for adjusting maximized titlebar height (especially for people with top-screen taskbars)
         private void AdjustTitlebarHeight()
         {
-            var titlebarBorder = this.FindControl<Border>("Titlebar");
+            Border? titlebarBorder = this.FindControl<Border>("Titlebar");
             if (titlebarBorder == null) return;
 
             if (WindowState == WindowState.Maximized)
-            {
                 titlebarBorder.Margin = new(0, 7, 0, 0);
-            }
             else
-            {
                 titlebarBorder.Margin = new(0);
-            }
+            
         }
 
-        // -- WINDOW CONTROLS -- //
         private void Titlebar_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
             if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
                 BeginMoveDrag(e);
         }
 
-        private void MinimizeButton_Click(object? sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
-        }
-
-        private void MaximizeButton_Click(object? sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState == WindowState.Maximized 
-                ? WindowState.Normal 
-                : WindowState.Maximized;
-        }
-
-        private void CloseButton_Click(object? sender, RoutedEventArgs e)
-        {
-            Close();
-        }
+        private void MinimizeButton_Click(object? sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+        private void MaximizeButton_Click(object? sender, RoutedEventArgs e) => WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+        private void CloseButton_Click(object? sender, RoutedEventArgs e) => Close();
     }
 }

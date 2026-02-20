@@ -80,7 +80,12 @@
 				</StackPanel>
 
 				<StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
-					
+					<ToggleSwitch IsChecked="{Binding Autorun}"
+								  OnContent=""
+								  OffContent=""
+								  MinWidth="0"
+								  VerticalAlignment="Center"/>
+					<TextBlock Text="Auto run" VerticalAlignment="Center" Opacity="0.6" FontSize="12"/>
 				</StackPanel>
 
 			</Grid>

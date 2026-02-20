@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using AvaloniaEdit;
 using cheluan.Models;
 using cheluan.Services;
@@ -35,6 +36,7 @@ namespace cheluan.ViewModels
 
         [ObservableProperty] private string _titlebarText = "cheluan"; // ─
         [ObservableProperty] private bool _saved = true; //  false when user types in editor (MainWindow)
+        [ObservableProperty] private bool _autorun = false;
 
         partial void OnSavedChanged(bool value) => UpdateTitlebar();
 
