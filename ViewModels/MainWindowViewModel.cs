@@ -37,6 +37,9 @@ namespace cheluan.ViewModels
         [ObservableProperty] private string _titlebarText = "cheluan"; // ─
         [ObservableProperty] private bool _saved = true; //  false when user types in editor (MainWindow)
         [ObservableProperty] private bool _autorun = false;
+        [ObservableProperty] private bool _isDocumentationOpen = true;
+
+        public IReadOnlyList<DocumentationEntry> DocumentationEntries => LuaService.DocumentationEntries;
 
         partial void OnSavedChanged(bool value) => UpdateTitlebar();
 
@@ -48,6 +51,7 @@ namespace cheluan.ViewModels
 
             Turtles.Add(MainTurtle);
             luaService.RegisterSpawner(CreateNewTurtle);
+
         }
 
         // -- HELPERS -- //
@@ -71,6 +75,10 @@ namespace cheluan.ViewModels
         }
 
         // -- UI HANDLERS -- //
+        [RelayCommand]
+        public async Task ToggleDocumentation()
+            => IsDocumentationOpen = !IsDocumentationOpen;
+
         [RelayCommand]
         public async Task RequestCanvasExport()
             => ExportCanvasRequested?.Invoke();

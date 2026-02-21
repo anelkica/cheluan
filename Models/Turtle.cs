@@ -74,6 +74,21 @@ public class Turtle
             PenColor = hex;
     }
 
+    public void Color(double r, double g, double b, double a = -1) //
+    {
+        int validRed = Math.Clamp((int)r, 0, 255);
+        int validGreen = Math.Clamp((int)g, 0, 255);
+        int validBlue = Math.Clamp((int)g, 0, 255);
+
+        if (a < 0)
+            Color($"#{validRed:X2}{validGreen:X2}{validBlue:X2}");
+        else
+        {
+            int validAlpha = Math.Clamp((int)a, 0, 255);
+            Color($"#{validAlpha:X2}{validRed:X2}{validGreen:X2}{validBlue:X2}");
+        }
+    }
+
     public void Turn(double degrees) => SetAngle(Angle + degrees); // relative turning
     public void SetAngle(double degrees) => Angle = (degrees % 360 + 360) % 360; // sets the absolute angle (always positive btw)
 
@@ -95,5 +110,6 @@ public class Turtle
     [MoonSharpVisible(true)] public void pen_down() => PenDown();
 
     [MoonSharpVisible(true)] public void color(string? hex) => Color(hex);
+    [MoonSharpVisible(true)] public void color(double r, double g, double b, double a = -1) => Color(r, g, b, a);
 
 }

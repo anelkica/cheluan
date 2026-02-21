@@ -6,6 +6,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using AvaloniaEdit.Editing;
 using AvaloniaEdit.TextMate;
 using cheluan.Models;
 using cheluan.ViewModels;
@@ -34,6 +35,23 @@ namespace cheluan.Views
             RegistryOptions registryOptions = new(ThemeName.Dracula);
             _textMateInstallation = CodeEditor.InstallTextMate(registryOptions);
             _textMateInstallation.SetGrammar(registryOptions.GetScopeByLanguageId("lua"));
+
+            // we did some source code hunting (AvaloniaEdit/TextEditor.cs)
+            foreach (var margin in CodeEditor.TextArea.LeftMargins)
+            {
+                if (margin is LineNumberMargin lineMargin)
+                {
+                    // apply margin for the line numbers away from the code
+                    lineMargin.Margin = new Thickness(8, 0, 24, 0);
+
+                    // separator line is always the element after the LineNumberMargin, remove him
+                    int index = CodeEditor.TextArea.LeftMargins.IndexOf(lineMargin);
+                    if (index + 1 < CodeEditor.TextArea.LeftMargins.Count)
+                        CodeEditor.TextArea.LeftMargins.RemoveAt(index + 1);
+
+                    break;
+                }
+            }
         }
 
         protected override void OnOpened(EventArgs e)
@@ -78,11 +96,17 @@ namespace cheluan.Views
                 _autoRunTimer.Start();
             };
 
-            // adjust titlebar on maximize/minimize
             PropertyChanged += (s, e) =>
             {
+                // adjust titlebar on maximize/minimize
                 if (e.Property.Name == nameof(WindowState))
                     AdjustTitlebarHeight();
+            };
+
+            vm.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(vm.IsDocumentationOpen))
+                    AdjustEditorHeight();
             };
         }
 
@@ -131,6 +155,21 @@ namespace cheluan.Views
             // add a notification here??
         }
 
+        // i don't wanna set a pixel height. this sets the bottom bar to be percentage based using * notation
+        private void AdjustEditorHeight()
+        {
+            if (vm.IsDocumentationOpen)
+            {
+                EditorGrid.RowDefinitions[0].Height = new GridLength(7, GridUnitType.Star);
+                EditorGrid.RowDefinitions[1].Height = new GridLength(3, GridUnitType.Star);
+            }
+            else
+            {
+                EditorGrid.RowDefinitions[1].Height = new GridLength(1, GridUnitType.Star);
+                EditorGrid.RowDefinitions[1].Height = new GridLength(0);
+            }
+
+        }
 
         // for adjusting maximized titlebar height (especially for people with top-screen taskbars)
         private void AdjustTitlebarHeight()

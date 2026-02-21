@@ -1,6 +1,6 @@
 local colors = {"#FF71CE", "#01CDFE", "#05FFA1", "#B967FF", "#FFFB96"}
 
-function draw_star(size)
+local function draw_star(size)
     turtle.pen_down()
     for i = 1, 5 do
         turtle.move(size)
@@ -9,14 +9,16 @@ function draw_star(size)
     turtle.pen_up()
 end
 
-turtle.pen_up()
 for i = 1, 365 do
-    local x = math.random(-300, 300)
-    local y = math.random(-300, 300)
-    
-    turtle.turn(math.random(0, 360))
-    turtle.move(math.random(50, 150))
-    
+    local size = math.random(5, 20)
+
+    -- keep star fully inside bounds by shrinking the spawn area by star size
+    local x = math.random(-200 + size, 200 - size)
+    local y = math.random(-200 + size, 200 - size)
+
+    turtle.pen_up()
+    turtle.teleport(x, y)
+    turtle.angle(math.random(0, 360))
     turtle.color(colors[math.random(1, #colors)])
-    draw_star(math.random(5, 20))
+    draw_star(size)
 end

@@ -11,5 +11,5 @@ public interface ILuaService
     Task<Result<string>> ReadScriptFileAsync(IStorageFile file);
     Task<Result> SaveScriptFileAsync(IStorageFile file, string content);
 
-    public void RegisterSpawner(Func<Turtle> spawner);
+    void RegisterSpawner(Func<Turtle> spawner);
 }

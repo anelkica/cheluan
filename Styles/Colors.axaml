@@ -16,6 +16,11 @@
     <Color x:Key="Black10">#1A000000</Color>
     <Color x:Key="Black20">#33000000</Color>
 
+    <!-- 
+        https://github.com/AvaloniaUI/Avalonia/blob/master/src/Avalonia.Themes.Simple/Controls/ScrollViewer.xaml 
+        make the background of the scrollbar track transparent
+    -->
+    <SolidColorBrush x:Key="ThemeControlMidBrush" Color="Transparent"/>
 
     <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource Accent}" />
     <SolidColorBrush x:Key="AccentHoverBrush" Color="{StaticResource AccentHover}" />

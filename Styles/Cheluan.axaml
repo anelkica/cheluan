@@ -37,7 +37,7 @@
 		</Style>
 	</Style>
 
-	<Style Selector="Button.Exit">
+	<Style Selector="Button.exit">
 		<Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
 			<Setter Property="Background" Value="{DynamicResource DangerBrush}"/>
 			<Setter Property="Foreground" Value="White"/>
@@ -49,7 +49,7 @@
 		</Style>
 	</Style>
 
-	<Style Selector="Button.Run">
+	<Style Selector="Button.run">
 		<Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
 		<Setter Property="Foreground" Value="#F2F2F2"/>
 		<Setter Property="FontWeight" Value="Bold"/>
@@ -65,11 +65,16 @@
 		</Style>
 	</Style>
 
-	<Style Selector="Button.Tool">
+	<Style Selector="Button.tool">
 		<Setter Property="Background" Value="Transparent"/>
 		<Setter Property="Foreground" Value="#AAAAAA"/>
 		<Setter Property="FontFamily" Value="Cascadia Code, JetBrains Mono, monospace"/>
 		<Setter Property="FontSize" Value="12"/>
+
+		<Style Selector="^.active">
+			<Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
+		</Style>
+
 
 		<Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
 			<Setter Property="Background" Value="Transparent"/>
@@ -120,6 +125,24 @@
 
 		<Style Selector="^:checked /template/ Border#SwitchKnobBounds">
 			<Setter Property="Background" Value="{DynamicResource Accent}"></Setter>
+		</Style>
+	</Style>
+
+	<Style Selector="AvaloniaEdit|TextEditor ScrollBar">
+		<Style Selector="^ /template/ Border">
+			<Setter Property="Background" Value="Transparent"/>
+		</Style>
+		<Style Selector="^ /template/ RepeatButton.repeat">
+			<Setter Property="IsVisible" Value="False"/>
+		</Style>
+		<Style Selector="^ /template/ Thumb#thumb">
+			<Setter Property="Background" Value="#3A3A3A"/>
+			<Setter Property="MinWidth" Value="4"/>
+			<Setter Property="MinHeight" Value="4"/>
+			<Setter Property="Margin" Value="0,4"/>
+			<Style Selector="^:pointerover">
+				<Setter Property="Background" Value="#555555"/>
+			</Style>
 		</Style>
 	</Style>
 

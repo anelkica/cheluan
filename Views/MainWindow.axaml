@@ -1,6 +1,7 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:AvaloniaEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+		xmlns:models="using:cheluan.Models"
 		xmlns:vm="using:cheluan.ViewModels"
 		x:Class="cheluan.Views.MainWindow"
 		x:DataType="vm:MainWindowViewModel"
@@ -44,7 +45,7 @@
 							BorderThickness="0" CornerRadius="0"
 							Content="□" FontSize="14" FontWeight="Light"/>
 
-					<Button Name="CloseButton" Classes="Exit" Click="CloseButton_Click"
+					<Button Name="CloseButton" Classes="exit" Click="CloseButton_Click"
 							Width="52" VerticalAlignment="Stretch" Padding="0"
 							BorderThickness="0" CornerRadius="0"
 							Content="✕" FontSize="14" FontWeight="Light"/>
@@ -56,17 +57,17 @@
 		<Border Grid.Row="1" Background="#1E1E1E" BorderBrush="#2B2B2B" BorderThickness="0,0,0,1">
 			<Grid ColumnDefinitions="Auto, Auto, *, Auto" Margin="0,0,24,0">
 				<StackPanel Grid.Column="0" Orientation="Horizontal">
-					<Button Classes="Run" Content="▶ Run"
+					<Button Classes="run" Content="▶ Run"
 							Command="{Binding ExecuteCodeFromEditorCommand}"
 							CommandParameter="{Binding #CodeEditor}" />
-					<Button Classes="Tool" Content="Clear"
+					<Button Classes="tool" Content="Clear"
 							Command="{Binding RequestCanvasClearCommand}" />
 				</StackPanel>
 
 				<StackPanel Grid.Column="1" Orientation="Horizontal">
 					<Rectangle Width="1" Height="18" Fill="#333333" Margin="10,0"/>
 
-					<Button Content="File" Classes="Tool">
+					<Button Content="File" Classes="tool">
 						<Button.Flyout>
 							<MenuFlyout Placement="BottomEdgeAlignedLeft">
 								<MenuItem Header="New" Command="{Binding NewFileAsync}" />
@@ -76,6 +77,8 @@
 								<MenuItem Header="Export Canvas" Command="{Binding RequestCanvasExport}" />
 							</MenuFlyout>
 						</Button.Flyout>
+					</Button>
+					<Button Classes="tool" Classes.active="{Binding IsDocumentationOpen}" Content="Docs" Command="{Binding ToggleDocumentation}">
 					</Button>
 				</StackPanel>
 
@@ -100,20 +103,57 @@
 
 			<!-- LUA CODE EDITOR -->
 			<Border Grid.Column="0" VerticalAlignment="Stretch">
-				<Grid RowDefinitions="34, *">
-					<Border Grid.Row="0" Background="#252525" BorderThickness="0,0,0,1" BorderBrush="#2B2B2B">
-						<TextBlock Text="Code Editor" TextAlignment="Center" VerticalAlignment="Center" />
+				<Grid x:Name="EditorGrid" RowDefinitions="*, Auto">
+
+					<Grid Grid.Row="0" VerticalAlignment="Stretch" RowDefinitions="34, *">
+						<Border Grid.Row="0" Background="#252525" BorderThickness="0,0,0,1" BorderBrush="#2B2B2B">
+							<TextBlock Text="Code Editor" TextAlignment="Center" VerticalAlignment="Center" />
+						</Border>
+						<AvaloniaEdit:TextEditor Grid.Row="1" Name="CodeEditor"
+												 SyntaxHighlighting="Lua"
+												 ShowLineNumbers="True"
+												 Margin="6,0,0,0"
+												 FontSize="14"
+												 FontFamily="Cascadia Code,Consolas,Monospace"
+												 Background="Transparent"
+												 Foreground="#D4D4D4" />
+					</Grid>
+
+
+					<!-- DOCUMENTATION -->
+					<Border Grid.Row="1"
+							Height="200"
+							Background="#181818"
+							VerticalAlignment="Stretch"
+							BorderThickness="0,1,0,0" BorderBrush="#2B2B2B"
+							IsVisible="{Binding IsDocumentationOpen}">
+
+						<Grid RowDefinitions="34, *">
+							<Border Grid.Row="0" Background="#252525" BorderThickness="0,1,0,1" BorderBrush="#2B2B2B">
+								<TextBlock Text="Docs" TextAlignment="Center" VerticalAlignment="Center" />
+							</Border>
+							<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden">
+								<ItemsControl Margin="10" ItemsSource="{Binding DocumentationEntries}">
+									<ItemsControl.ItemsPanel>
+										<ItemsPanelTemplate>
+											<WrapPanel HorizontalAlignment="Center" />
+										</ItemsPanelTemplate>
+									</ItemsControl.ItemsPanel>
+
+									<ItemsControl.ItemTemplate>
+										<DataTemplate x:DataType="models:DocumentationEntry">
+											<Border  Margin="4" Padding="10,8" Background="#1e1e1e" BorderThickness="1" BorderBrush="#2B2B2B" CornerRadius="4">
+												<StackPanel>
+													<TextBlock Text="{Binding Signature}" Foreground="{DynamicResource AccentBrush}" FontFamily="Cascadia Code,Consolas,Monospace" FontSize="12"/>
+													<TextBlock Text="{Binding Description}" Foreground="#858585" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0"/>
+												</StackPanel>
+											</Border>
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ItemsControl>
+							</ScrollViewer>
+						</Grid>
 					</Border>
-					<AvaloniaEdit:TextEditor Grid.Row="1" Name="CodeEditor"
-											 SyntaxHighlighting="Lua"
-											 ShowLineNumbers="True"
-											 Margin="6,0,0,0"
-											 LineNumbersMargin="18,0,12,0"
-											 FontSize="14"
-											 FontFamily="Cascadia Code,Consolas,Monospace"
-											 Background="Transparent"
-											 Foreground="#D4D4D4">
-					</AvaloniaEdit:TextEditor>
 				</Grid>
 			</Border>
 
@@ -132,7 +172,6 @@
 							<Border BorderBrush="#2B2B2B" BorderThickness="1">
 								<Canvas Name="TurtleCanvas" Width="400" Height="400" />
 							</Border>
-
 						</Viewbox>
 
 						<!-- BOTTOM RIGHT NOTIFICATION TOAST -->

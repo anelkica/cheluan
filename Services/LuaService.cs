@@ -1,10 +1,13 @@
-﻿using cheluan.Models;
+﻿using Avalonia;
+using Avalonia.Platform.Storage;
+using cheluan.Models;
 using MoonSharp.Interpreter;
+using MoonSharp.Interpreter.Interop;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Avalonia.Platform.Storage;
-using MoonSharp.Interpreter.Interop;
+using Tmds.DBus.Protocol;
 
 namespace cheluan.Services;
 
@@ -15,6 +18,22 @@ public class LuaService : ILuaService
     private Func<Turtle>? _turtleSpawner; // hook for MainWindowViewModel, for spawning and tracking new turtles
     public void RegisterSpawner(Func<Turtle> spawner) => _turtleSpawner = spawner;
 
+    // contains a list of lua function signatures and their description, for rendering in UI
+    public static readonly IReadOnlyList<DocumentationEntry> DocumentationEntries =
+    [
+        new() { Signature = "move(distance)",      Description = "Moves turtle forward." },
+        new() { Signature = "teleport(x, y)",      Description = "Teleports turtle to (x,y)." },
+        new() { Signature = "center()",            Description = "Teleports turtle back to center (0,0)." },
+
+        new() { Signature = "angle(degrees)",      Description = "Sets turtle's absolute angle in degrees." },
+        new() { Signature = "turn(degrees)",       Description = "Rotates turtle relative to its current angle." },
+
+        new() { Signature = "pen_size(thickness)", Description = "Sets pen thickness." },
+        new() { Signature = "pen_up()",            Description = "Lifts pen so movement doesn't draw." },
+        new() { Signature = "pen_down()",          Description = "Puts pen down so movement draws." },
+        new() { Signature = "color(hex)",          Description = "Sets pen color. #RRGGBB format." },
+        new() { Signature = "color(r, g, b)",      Description = "Sets pen color. RGB format."}
+    ];
 
     public LuaService(Turtle turtle)
     {
@@ -38,7 +57,7 @@ public class LuaService : ILuaService
                 Table turtleClass = new(script);
                 turtleClass["spawn"] = (Func<Turtle>)(() => _turtleSpawner());
 
-                script.Globals["TurtleSpawner"] = turtleClass;
+                script.Globals["turtle_spawner"] = turtleClass;
             }
 
             script.DoString(code);

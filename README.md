@@ -11,13 +11,15 @@ Load `.lua` scripts or code them in the application to see changes instantly!
 - Live scripting: write Lua code to draw on the canvas
     - Run or Save (CTRL + S) to see visual changes
 - Load and Save `.lua` scripts
+- Built-in cheatsheet for methods
 - Syntax highlighting
-  - Courtesy of AvaloniaEdit and TextMate!
+  - Courtesy of AvaloniaEdit and TextMate
   
 ## 💫 Planned features..
 - *UNCERTAIN:* Autocomplete
-- Light theme
+- *UNCERTAIN:* Light theme
 - Output console
 
 ## 📸 Screenshots
-![demo](https://github.com/user-attachments/assets/f193cd3c-1be5-470b-b209-37761a224548)
+<img width="1422" height="797" alt="Image" src="https://github.com/user-attachments/assets/99c582b5-d7d4-42a1-b1bd-41f878e5f2fd" />
+<img width="1422" height="797" alt="Image" src="https://github.com/user-attachments/assets/4b88446a-3afc-47a1-acb1-62e01a6b8cb7" />
