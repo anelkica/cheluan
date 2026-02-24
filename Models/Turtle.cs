@@ -62,6 +62,56 @@ public class Turtle
         Position = new Point(canvasX, canvasY);
     }
 
+    public void Rect(double width, double height)
+    {
+        if (width <= 0 || height <= 0)
+            throw new Exception($"Rectangle dimensions must be positive. Dimensions: ({width}x{height})");
+
+        // literally the same code from python turtle.rect()
+        for (int i = 0; i < 2; i++)
+        {
+            Move(width);
+            Turn(90);
+            Move(height);
+            Turn(90);
+        }
+    }
+
+    public void Circle(double radius) 
+    {
+        if (radius <= 0)
+            throw new Exception($"Radius must be positive. Radius: {radius}");
+
+        // i'll be honest, i don't know much maths but hope this works
+
+        double circumference = 2 * Math.PI * radius;
+        double segmentCount = Math.Max(12, (int)(circumference / 5)); // min 12 segments, 5px per segment
+        double segmentAngle = 360 / segmentCount;
+        double segmentDistance = circumference / segmentCount;
+
+        for (int i = 0; i < segmentCount; i++) 
+        {
+            Move(segmentDistance);
+            Turn(segmentAngle);
+        }
+    }
+
+    public void Polygon(int sides, double size) 
+    {
+        if (sides < 3)
+            throw new Exception($"Polygon must have at least 3 sides. Sides: {sides}");
+
+        if (size <= 0)
+            throw new Exception($"Polygon size must be positive. Size: {size}");
+
+        double anglePerTurn = 360.0 / sides;
+        for (int i = 0; i < sides; i++) 
+        {
+            Move(size);
+            Turn(anglePerTurn);
+        }
+    }
+
     public void Color(string? hex)
     {
         if (string.IsNullOrWhiteSpace(hex))
@@ -101,6 +151,10 @@ public class Turtle
     [MoonSharpVisible(true)] public void move(double d) => Move(d);
     [MoonSharpVisible(true)] public void teleport(double x, double y) => Teleport(x, y);
     [MoonSharpVisible(true)] public void center() => Teleport(0, 0);
+
+    [MoonSharpVisible(true)] public void rect(double w, double h) => Rect(w, h);
+    [MoonSharpVisible(true)] public void circle(double r) => Circle(r);
+    [MoonSharpVisible(true)] public void polygon(int sides, double size) => Polygon(sides, size);
 
     [MoonSharpVisible(true)] public void angle(double d) => SetAngle(d);
     [MoonSharpVisible(true)] public void turn(double d) => Turn(d);

@@ -21,18 +21,22 @@ public class LuaService : ILuaService
     // contains a list of lua function signatures and their description, for rendering in UI
     public static readonly IReadOnlyList<DocumentationEntry> DocumentationEntries =
     [
-        new() { Signature = "move(distance)",      Description = "Moves turtle forward." },
-        new() { Signature = "teleport(x, y)",      Description = "Teleports turtle to (x,y)." },
-        new() { Signature = "center()",            Description = "Teleports turtle back to center (0,0)." },
+        new() { Signature = "move(distance)",        Description = "Moves turtle forward." },
+        new() { Signature = "teleport(x, y)",        Description = "Teleports turtle to (x,y)." },
+        new() { Signature = "center()",              Description = "Teleports turtle back to center (0,0)." },
 
-        new() { Signature = "angle(degrees)",      Description = "Sets turtle's absolute angle in degrees." },
-        new() { Signature = "turn(degrees)",       Description = "Rotates turtle relative to its current angle." },
+        new() { Signature = "rect(width, height)",   Description = "Draws rectangle." },
+        new() { Signature = "circle(radius)",        Description = "Draws circle." },
+        new() { Signature = "polygon(sides, size)",  Description = "Draws polygon with number of sides and side length." },
 
-        new() { Signature = "pen_size(thickness)", Description = "Sets pen thickness." },
-        new() { Signature = "pen_up()",            Description = "Lifts pen so movement doesn't draw." },
-        new() { Signature = "pen_down()",          Description = "Puts pen down so movement draws." },
-        new() { Signature = "color(hex)",          Description = "Sets pen color. #RRGGBB format." },
-        new() { Signature = "color(r, g, b)",      Description = "Sets pen color. RGB format."}
+        new() { Signature = "angle(degrees)",        Description = "Sets turtle's absolute angle in degrees." },
+        new() { Signature = "turn(degrees)",         Description = "Rotates turtle relative to its current angle." },
+
+        new() { Signature = "pen_size(thickness)",   Description = "Sets pen thickness." },
+        new() { Signature = "pen_up()",              Description = "Lifts pen so movement doesn't draw." },
+        new() { Signature = "pen_down()",            Description = "Puts pen down so movement draws." },
+        new() { Signature = "color(hex)",            Description = "Sets pen color. #RRGGBB format." },
+        new() { Signature = "color(r, g, b)",        Description = "Sets pen color. RGB format."}
     ];
 
     public LuaService(Turtle turtle)
