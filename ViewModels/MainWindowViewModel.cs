@@ -147,13 +147,14 @@ namespace cheluan.ViewModels
             _currentFile = files[0];
 
             Result<string> result = await _luaService.ReadScriptFileAsync(_currentFile);
-            if (result.Success)
+            if (result.Success) {
                 CodeEditor?.Text = result.Value ?? ""; // null content? default to ""
+                await ExecuteCodeFromEditor();
+            }
 
             await Notification.NotifyAsync(Result.Ok(), $"Opened {_currentFile.Name}");
 
             Saved = true; // refactor later im tired
-            await RequestCanvasClear();
         }
 
         [RelayCommand]

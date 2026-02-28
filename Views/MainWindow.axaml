@@ -13,6 +13,7 @@
 		FontFamily="Cascadia Code, JetBrains Mono, Consolas, monospace"
 		Background="#181818"
 		Foreground="{DynamicResource TextPrimary}"
+		Icon="/Assets/favicon.ico"
 		Title="cheluan">
 
 	<Window.KeyBindings>
