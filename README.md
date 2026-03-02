@@ -1,4 +1,7 @@
 ﻿# 🐢 cheluan
+![.NET](https://img.shields.io/badge/.NET-10-512BD4?style=flat-square&logo=dotnet)
+![AvaloniaUI](https://img.shields.io/badge/Avalonia-11.x-007ACC?style=flat-square&logo=visualstudio)
+![Lua](https://img.shields.io/badge/Lua-5.4-000080?style=flat-square&logo=lua)
 > *chelona (turtle) + lua + moon (MoonSharp) = cheluan*
 
 A C# turtle graphics playground with embedded Lua for controlling the turtle.
