@@ -1,5 +1,6 @@
 <Styles xmlns="https://github.com/avaloniaui"
 		xmlns:AvaloniaEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+		xmlns:Completion="clr-namespace:AvaloniaEdit.CodeCompletion;assembly=AvaloniaEdit"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
 	<Style Selector="Button">
@@ -128,7 +129,7 @@
 		</Style>
 	</Style>
 
-	<Style Selector="AvaloniaEdit|TextEditor ScrollBar">
+	<Style Selector="ScrollBar">
 		<Style Selector="^ /template/ Border">
 			<Setter Property="Background" Value="Transparent"/>
 		</Style>
@@ -145,5 +146,32 @@
 			</Style>
 		</Style>
 	</Style>
+
+<Style Selector="Completion|CompletionList">
+    <Setter Property="Background" Value="#181818"/>
+    <Setter Property="BorderBrush" Value="#333333"/>
+    <Setter Property="BorderThickness" Value="1"/>
+
+    <Style Selector="^ ListBoxItem">
+        <Setter Property="FontFamily" Value="Cascadia Code, JetBrains Mono, monospace"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Foreground" Value="#AAAAAA"/>
+        <Setter Property="Padding" Value="10,4"/>
+
+        <Style Selector="^:selected">
+            <Setter Property="Foreground" Value="White"/>
+            <Style Selector="^ /template/ ContentPresenter">
+                <Setter Property="Background" Value="#1A3D29"/>
+            </Style>
+        </Style>
+
+        <Style Selector="^:pointerover">
+            <Setter Property="Foreground" Value="#F2F2F2"/>
+            <Style Selector="^ /template/ ContentPresenter">
+                <Setter Property="Background" Value="#2A2A2A"/>
+            </Style>
+        </Style>
+    </Style>
+</Style>
 
 </Styles>

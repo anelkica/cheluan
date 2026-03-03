@@ -11,8 +11,6 @@ public class TurtleRenderer
 {
     private readonly Canvas _canvas;
 
-    public double Thickness { get; set; } = 2;
-
     public TurtleRenderer(Canvas canvas)
     {
         _canvas = canvas;

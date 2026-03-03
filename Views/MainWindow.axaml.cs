@@ -6,9 +6,12 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using AvaloniaEdit.CodeCompletion;
+using AvaloniaEdit.Document;
 using AvaloniaEdit.Editing;
 using AvaloniaEdit.TextMate;
 using cheluan.Models;
+using cheluan.Services;
 using cheluan.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -25,6 +28,7 @@ namespace cheluan.Views
         private readonly TurtleRenderer _turtleRenderer;
 
         private DispatcherTimer _autoRunTimer = new(); // debounce timer. resets timer each character typed
+        private CompletionWindow? _completionWindow;
 
         public MainWindow()
         {
@@ -85,6 +89,7 @@ namespace cheluan.Views
             vm.ExportCanvasRequested += OnExportCanvasRequested;
             vm.TurtleCreated += SetupTurtle;
 
+            CodeEditor.TextArea.TextEntered += TextArea_TextEntered; // autocomplete
             CodeEditor.TextChanged += (s, e) =>
             {
                 vm.Saved = false;
@@ -125,11 +130,36 @@ namespace cheluan.Views
             };
         }
 
+        // autocomplete
+        private void TextArea_TextEntered(object? sender, TextInputEventArgs e)
+        {
+            if (e.Text != ".") return;
+
+            DocumentLine line = CodeEditor.Document.GetLineByOffset(CodeEditor.CaretOffset);
+            string lineText = CodeEditor.Document.GetText(line.Offset, CodeEditor.CaretOffset - line.Offset);
+
+            // if user wrote a dot, and the word turtle is before the dot
+            if (!lineText.TrimStart().StartsWith("turtle")) return;
+
+            _completionWindow = new CompletionWindow(CodeEditor.TextArea);
+            _completionWindow.Closed += (o, args) => _completionWindow = null;
+
+            IList<ICompletionData> data = _completionWindow.CompletionList.CompletionData;
+
+            foreach (DocumentationEntry entry in LuaService.DocumentationEntries)
+            {
+                data.Add(new TurtleCompletionData(entry));
+            }
+
+            _completionWindow.Show();
+        }
+
 
         private void OnClearCanvasRequested()
         {
             vm!.MainTurtle.Reset();
             _turtleRenderer.Clear();
+
         }
 
         private async void OnExportCanvasRequested()

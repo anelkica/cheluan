@@ -11,13 +11,16 @@ public record TurtleStep(Point StartPoint, Point EndPoint, string PenColorHex, d
 [MoonSharpUserData]
 public class Turtle
 {
+    private const string DefaultPenColor = "#32CD32";
+    private const double DefaultPenSize = 2;
+
     public Point Position { get; set; }
     public Size Bounds { get; set; } // safety against crossing the available canvas
     public double Angle { get; set; }
     public double AngleRadians => Angle * Math.PI / 180;
 
-    public string PenColor { get; private set; } = "#32CD32";
-    public double PenSize { get; private set; } = 2;
+    public string PenColor { get; private set; } = DefaultPenColor;
+    public double PenSize { get; private set; } = DefaultPenSize;
     public bool IsPenDown { get; private set; } = true;
 
     public event Action<TurtleStep>? OnMove;
@@ -27,7 +30,8 @@ public class Turtle
         Position = new(Bounds.Width / 2, Bounds.Height / 2); // centers the turtle
         Angle = 0;
 
-        PenSize = 2;
+        PenColor = DefaultPenColor;
+        PenSize = DefaultPenSize;
         IsPenDown = true;
     }
 
