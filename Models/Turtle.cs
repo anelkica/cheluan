@@ -33,7 +33,16 @@ public class Turtle
     public event Action<TurtleStep>? OnMove;
     public event Action<TurtleFill>? OnFill;
 
-    static public string RGBToHexString(double r, double g, double b, double a = -1)
+    private static void ValidateDouble(double value, string paramName)
+    {
+        if (double.IsNaN(value))
+            throw new Exception($"{paramName} cannot be NaN");
+        
+        if (double.IsInfinity(value))
+            throw new Exception($"{paramName} cannot be infinite");
+    }
+
+    private static string RGBToHexString(double r, double g, double b, double a = -1)
     {
         int validRed = Math.Clamp((int)r, 0, 255);
         int validGreen = Math.Clamp((int)g, 0, 255);
@@ -62,6 +71,8 @@ public class Turtle
     // move forwards
     public void Move(double distance)
     {
+        ValidateDouble(distance, "distance");
+        
         Point oldPos = Position;
 
         double dx = distance * Math.Cos(AngleRadians);
@@ -83,6 +94,9 @@ public class Turtle
 
     public void Teleport(double localCoordinateX, double localCoordinateY)
     {
+        ValidateDouble(localCoordinateX, "x");
+        ValidateDouble(localCoordinateY, "y");
+        
         // convert to absolute/canvas coordinates, bcuz local (0,0) means (200,200) in absolute cords (default canvas is 400x400)
         double canvasX = (Bounds.Width / 2) + localCoordinateX;
         double canvasY = (Bounds.Height / 2) - localCoordinateY; // invert Y so it goes up on the screen
@@ -95,6 +109,9 @@ public class Turtle
 
     public void Rect(double width, double height)
     {
+        ValidateDouble(width, "width");
+        ValidateDouble(height, "height");
+        
         if (width <= 0 || height <= 0)
             throw new Exception($"Rectangle dimensions must be positive. Dimensions: ({width}x{height})");
 
@@ -108,8 +125,10 @@ public class Turtle
         }
     }
 
-    public void Circle(double radius) 
+    public void Circle(double radius)
     {
+        ValidateDouble(radius, "radius");
+        
         if (radius <= 0)
             throw new Exception($"Radius must be positive. Radius: {radius}");
 
@@ -120,23 +139,25 @@ public class Turtle
         double segmentAngle = 360 / segmentCount;
         double segmentDistance = circumference / segmentCount;
 
-        for (int i = 0; i < segmentCount; i++) 
+        for (int i = 0; i < segmentCount; i++)
         {
             Move(segmentDistance);
             Turn(segmentAngle);
         }
     }
 
-    public void Polygon(int sides, double size) 
+    public void Polygon(int sides, double size)
     {
+        ValidateDouble(size, "size");
+
         if (sides < 3)
             throw new Exception($"Polygon must have at least 3 sides. Sides: {sides}");
-
+        
         if (size <= 0)
             throw new Exception($"Polygon size must be positive. Size: {size}");
 
         double anglePerTurn = 360.0 / sides;
-        for (int i = 0; i < sides; i++) 
+        for (int i = 0; i < sides; i++)
         {
             Move(size);
             Turn(anglePerTurn);
@@ -153,6 +174,8 @@ public class Turtle
 
         if (hex.Length == 7 || hex.Length == 9) // #RRGGBB || #AARRGGBB
             PenColor = hex;
+        else
+            throw new Exception($"Invalid hex color format: {hex}. Expected #RRGGBB or #AARRGGBB.");
     }
 
     public void Color(double r, double g, double b, double a = -1)
@@ -172,9 +195,18 @@ public class Turtle
         _isFilling = true;
         _fillPoints.Clear();
 
-        FillColor = fillColorHex ?? PenColor;
+        if (string.IsNullOrWhiteSpace(fillColorHex))
+            FillColor = PenColor;
+        else
+        {
+            string hex = fillColorHex.StartsWith("#") ? fillColorHex : "#" + fillColorHex;
+            if (hex.Length != 7 && hex.Length != 9)
+                throw new Exception($"Invalid hex color format: '{fillColorHex}'. Expected #RRGGBB or #AARRGGBB");
+            
+            FillColor = hex;
+        }
+        
         _fillPoints.Add(Position);
-
     }
 
     public void StopFill()
@@ -187,9 +219,18 @@ public class Turtle
     }
 
     public void Turn(double degrees) => SetAngle(Angle + degrees); // relative turning
-    public void SetAngle(double degrees) => Angle = (degrees % 360 + 360) % 360; // sets the absolute angle (always positive btw)
+    public void SetAngle(double degrees)
+    {
+        ValidateDouble(degrees, "angle");
+        Angle = (degrees % 360 + 360) % 360; // sets the absolute angle (always positive btw)
+    }
 
-    public void SetPenSize(double thickness) => PenSize = thickness < 1 ? 1 : thickness; // thickness cant be less than 1
+    public void SetPenSize(double thickness)
+    {
+        ValidateDouble(thickness, "thickness");
+        
+        PenSize = thickness < 1 ? 1 : thickness;
+    }
     public void PenUp() => IsPenDown = false;
     public void PenDown() => IsPenDown = true;
 

@@ -20,8 +20,12 @@ public class TurtleCompletionData : ICompletionData
 
     public void Complete(TextArea textArea, ISegment completionSegment, EventArgs insertionRequestEventArgs)
     {
+        bool hasParameters = _entry.Signature.Contains('(') && _entry.Signature.IndexOf('(') < _entry.Signature.IndexOf(')') - 1;
         textArea.Document.Replace(completionSegment, $"{Text}()");
-        textArea.Caret.Offset -= 1; // push cursor inside parentheses ()
+
+        // move cursor inside () if method has parameters
+        if (hasParameters)
+            textArea.Caret.Offset -= 1;
     }
 
     public IImage? Image => null;
