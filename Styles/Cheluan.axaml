@@ -9,6 +9,7 @@
 		<Setter Property="HorizontalContentAlignment" Value="Center"/>
 		<Setter Property="Padding" Value="20,0"/>
 		<Setter Property="FontSize" Value="13"/>
+		<Setter Property="FontFamily" Value="Cascadia Code, JetBrains Mono, monospace"/>
 		<Setter Property="CornerRadius" Value="0" />
 		<Setter Property="BorderThickness" Value="0"/>
 		<Setter Property="Background" Value="Transparent" />
@@ -69,7 +70,6 @@
 	<Style Selector="Button.tool">
 		<Setter Property="Background" Value="Transparent"/>
 		<Setter Property="Foreground" Value="#AAAAAA"/>
-		<Setter Property="FontFamily" Value="Cascadia Code, JetBrains Mono, monospace"/>
 		<Setter Property="FontSize" Value="12"/>
 
 		<Style Selector="^.active">

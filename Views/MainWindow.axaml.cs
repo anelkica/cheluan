@@ -106,7 +106,10 @@ namespace cheluan.Views
             {
                 // adjust titlebar on maximize/minimize
                 if (e.Property.Name == nameof(WindowState))
+                {
                     AdjustTitlebarHeight();
+                    UpdateMaximizeIcon();
+                }
             };
 
             vm.PropertyChanged += (s, e) =>
@@ -213,6 +216,16 @@ namespace cheluan.Views
             else
                 titlebarBorder.Margin = new(0);
             
+        }
+
+        // avalonia doesn't support svg, gotta cope with this instead
+        private void UpdateMaximizeIcon()
+        {
+            Avalonia.Svg.Svg? maximizeIcon = this.FindControl<Avalonia.Svg.Svg>("MaximizeIcon");
+            if (maximizeIcon == null) return;
+
+            maximizeIcon.Path = WindowState == WindowState.Maximized
+                ? "avares://cheluan/Assets/Icons/minimize-2.svg" : "avares://cheluan/Assets/Icons/square.svg";
         }
 
         private void Titlebar_PointerPressed(object? sender, PointerPressedEventArgs e)

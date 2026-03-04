@@ -1,6 +1,7 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:AvaloniaEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+		xmlns:svg="using:Avalonia.Svg"
 		xmlns:models="using:cheluan.Models"
 		xmlns:vm="using:cheluan.ViewModels"
 		x:Class="cheluan.Views.MainWindow"
@@ -38,18 +39,21 @@
 				<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="0" VerticalAlignment="Stretch">
 					<Button Name="MinimizeButton" Click="MinimizeButton_Click"
 							Width="52" VerticalAlignment="Stretch" Padding="0"
-							BorderThickness="0" CornerRadius="0"
-							Content="—" FontSize="16" FontWeight="Light"/>
+							BorderThickness="0" CornerRadius="0">
+						<Svg Path="avares://cheluan/Assets/Icons/minus.svg" Width="16" Height="16"  />
+					</Button>
 
 					<Button Name="MaximizeButton" Click="MaximizeButton_Click"
 							Width="52" VerticalAlignment="Stretch" Padding="0"
-							BorderThickness="0" CornerRadius="0"
-							Content="□" FontSize="14" FontWeight="Light"/>
+							BorderThickness="0" CornerRadius="0">
+						<Svg Name="MaximizeIcon" Path="avares://cheluan/Assets/Icons/square.svg" Width="14" Height="14" />
+					</Button>
 
 					<Button Name="CloseButton" Classes="exit" Click="CloseButton_Click"
 							Width="52" VerticalAlignment="Stretch" Padding="0"
-							BorderThickness="0" CornerRadius="0"
-							Content="✕" FontSize="14" FontWeight="Light"/>
+							BorderThickness="0" CornerRadius="0">
+						<Svg Path="avares://cheluan/Assets/Icons/x.svg" Width="16" Height="16" />
+					</Button>
 				</StackPanel>
 			</Grid>
 		</Border>
@@ -58,9 +62,14 @@
 		<Border Grid.Row="1" Background="#1E1E1E" BorderBrush="#2B2B2B" BorderThickness="0,0,0,1">
 			<Grid ColumnDefinitions="Auto, Auto, *, Auto" Margin="0,0,24,0">
 				<StackPanel Grid.Column="0" Orientation="Horizontal">
-					<Button Classes="run" Content="▶ Run"
+					<Button Classes="run"
 							Command="{Binding ExecuteCodeFromEditorCommand}"
-							CommandParameter="{Binding #CodeEditor}" />
+							CommandParameter="{Binding #CodeEditor}">
+						<StackPanel Orientation="Horizontal" Spacing="6">
+							<svg:Svg Path="avares://cheluan/Assets/Icons/code.svg" Width="16" Height="16" Margin="0,1,0,0" VerticalAlignment="Center"/>
+							<TextBlock Text="Run" VerticalAlignment="Center" FontFamily="monospace"/>
+						</StackPanel>
+					</Button>
 					<Button Classes="tool" Content="Clear"
 							Command="{Binding RequestCanvasClearCommand}" />
 				</StackPanel>
