@@ -41,7 +41,7 @@ public class TurtleRenderer
                 Stroke = brush,
                 StrokeThickness = step.PenSize,
 
-                StrokeJoin = PenLineJoin.Round,
+                StrokeJoin = PenLineJoin.Round, 
                 StrokeLineCap = PenLineCap.Round
             };
 
@@ -57,5 +57,28 @@ public class TurtleRenderer
             Dispatcher.UIThread.Post(drawLine); 
     }
 
+    public async void DrawFill(TurtleFill fill)
+    {
+        SolidColorBrush fillBrush = new(Color.Parse(fill.FillColorHex));
+        SolidColorBrush strokeBrush = new(Color.Parse(fill.StrokeColorHex));
 
+        void drawPolygon()
+        {
+            Polygon polygon = new()
+            {
+                Points = new Points(fill.Points),
+                Fill = fillBrush,
+                Stroke = strokeBrush,
+                StrokeThickness = fill.StrokeThickness,
+                StrokeJoin = PenLineJoin.Round
+            };
+
+            _canvas.Children.Insert(0, polygon);
+        }
+
+        if (Dispatcher.UIThread.CheckAccess())
+            drawPolygon();
+        else
+            Dispatcher.UIThread.Post(drawPolygon);
+    }
 }

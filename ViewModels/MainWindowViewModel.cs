@@ -163,13 +163,18 @@ namespace cheluan.ViewModels
             if (CodeEditor is null) return;
 
             if (_currentFile != null)
-                await _luaService.SaveScriptFileAsync(_currentFile, CodeEditor?.Text ?? "");
+            {
+                Result result = await _luaService.SaveScriptFileAsync(_currentFile, CodeEditor?.Text ?? "");
+                if (result.Success)
+                    Saved = true;
+            }
             else
+            {
                 await SaveAsFileAsync();  // file doesn't exist? do Save As
+                if (_currentFile is null) return; // cancelled
+            }
 
             await Notification.NotifyAsync(Result.Ok(), "Saved!");
-
-            Saved = true;
             await ExecuteCodeFromEditor();
         }
 
@@ -198,7 +203,11 @@ namespace cheluan.ViewModels
 
             _currentFile = file;
 
-            await _luaService.SaveScriptFileAsync(_currentFile, CodeEditor?.Text ?? "");
+            Result result = await _luaService.SaveScriptFileAsync(_currentFile, CodeEditor?.Text ?? "");
+            if (result.Success)
+                Saved = true;
+
+
         }
     }
 }

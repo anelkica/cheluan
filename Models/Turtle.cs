@@ -2,11 +2,14 @@
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace cheluan.Models;
 
 // a record tracking the movement of the turtle from start to end of a line
 public record TurtleStep(Point StartPoint, Point EndPoint, string PenColorHex, double PenSize);
+public record TurtleFill(IEnumerable<Point> Points, string FillColorHex, string StrokeColorHex, double StrokeThickness);
 
 [MoonSharpUserData]
 public class Turtle
@@ -19,17 +22,38 @@ public class Turtle
     public double Angle { get; set; }
     public double AngleRadians => Angle * Math.PI / 180;
 
+    private bool _isFilling = false;
+    private readonly List<Point> _fillPoints = [];
+    public string FillColor { get; private set; } = DefaultPenColor;
+
     public string PenColor { get; private set; } = DefaultPenColor;
     public double PenSize { get; private set; } = DefaultPenSize;
     public bool IsPenDown { get; private set; } = true;
 
     public event Action<TurtleStep>? OnMove;
+    public event Action<TurtleFill>? OnFill;
+
+    static public string RGBToHexString(double r, double g, double b, double a = -1)
+    {
+        int validRed = Math.Clamp((int)r, 0, 255);
+        int validGreen = Math.Clamp((int)g, 0, 255);
+        int validBlue = Math.Clamp((int)b, 0, 255);
+
+        if (a < 0)
+            return $"#{validRed:X2}{validGreen:X2}{validBlue:X2}";
+        else
+        {
+            int validAlpha = Math.Clamp((int)a, 0, 255);
+            return $"#{validAlpha:X2}{validRed:X2}{validGreen:X2}{validBlue:X2}";
+        }
+    }
 
     public void Reset()
     {
         Position = new(Bounds.Width / 2, Bounds.Height / 2); // centers the turtle
         Angle = 0;
 
+        FillColor = DefaultPenColor;
         PenColor = DefaultPenColor;
         PenSize = DefaultPenSize;
         IsPenDown = true;
@@ -49,6 +73,9 @@ public class Turtle
             throw new Exception($"Turtle out of bounds: ({newPos.X:F1},{newPos.Y:F1})! Bounds: ({Bounds.Width},{Bounds.Height})");
 
         Position = newPos;
+
+        if (_isFilling)
+            _fillPoints.Add(newPos);
 
         if (IsPenDown)
             OnMove?.Invoke(new TurtleStep(oldPos, newPos, PenColor, PenSize));
@@ -128,19 +155,35 @@ public class Turtle
             PenColor = hex;
     }
 
-    public void Color(double r, double g, double b, double a = -1) //
+    public void Color(double r, double g, double b, double a = -1)
     {
-        int validRed = Math.Clamp((int)r, 0, 255);
-        int validGreen = Math.Clamp((int)g, 0, 255);
-        int validBlue = Math.Clamp((int)g, 0, 255);
+        string hex = RGBToHexString(r, g, b, a);
+        Color(hex);
+    }
 
-        if (a < 0)
-            Color($"#{validRed:X2}{validGreen:X2}{validBlue:X2}");
-        else
-        {
-            int validAlpha = Math.Clamp((int)a, 0, 255);
-            Color($"#{validAlpha:X2}{validRed:X2}{validGreen:X2}{validBlue:X2}");
-        }
+    public void StartFill(double r, double g, double b, double a = -1)
+    {
+        string hex = RGBToHexString(r, g, b, a);
+        StartFill(hex);
+    }
+
+    public void StartFill(string? fillColorHex)
+    {
+        _isFilling = true;
+        _fillPoints.Clear();
+
+        FillColor = fillColorHex ?? PenColor;
+        _fillPoints.Add(Position);
+
+    }
+
+    public void StopFill()
+    {
+        if (!_isFilling || _fillPoints.Count < 3) return;
+        _isFilling = false;
+
+        OnFill?.Invoke(new TurtleFill([.. _fillPoints], FillColor, PenColor, PenSize));
+        _fillPoints.Clear();
     }
 
     public void Turn(double degrees) => SetAngle(Angle + degrees); // relative turning
@@ -159,6 +202,10 @@ public class Turtle
     [MoonSharpVisible(true)] public void rect(double w, double h) => Rect(w, h);
     [MoonSharpVisible(true)] public void circle(double r) => Circle(r);
     [MoonSharpVisible(true)] public void polygon(int sides, double size) => Polygon(sides, size);
+
+    [MoonSharpVisible(true)] public void start_fill(double r, double g, double b, double a = -1) => StartFill(r, g, b, a);
+    [MoonSharpVisible(true)] public void start_fill(string? hex) => StartFill(hex);
+    [MoonSharpVisible(true)] public void stop_fill() => StopFill();
 
     [MoonSharpVisible(true)] public void angle(double d) => SetAngle(d);
     [MoonSharpVisible(true)] public void turn(double d) => Turn(d);

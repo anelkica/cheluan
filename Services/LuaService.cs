@@ -36,7 +36,12 @@ public class LuaService : ILuaService
         new() { Signature = "pen_up()",              Description = "Lifts pen so movement doesn't draw." },
         new() { Signature = "pen_down()",            Description = "Puts pen down so movement draws." },
         new() { Signature = "color(hex)",            Description = "Sets pen color. #RRGGBB format." },
-        new() { Signature = "color(r, g, b)",        Description = "Sets pen color. RGB format."}
+        new() { Signature = "color(r, g, b)",        Description = "Sets pen color. RGB format."},
+
+        new() { Signature = "start_fill()",          Description = "Starts filling, uses current pen color."},
+        new() { Signature = "start_fill(hex)",       Description = "Starts filling with color. #RRGGBB format."},
+        new() { Signature = "start_fill(r, g, b)",   Description = "Starts filling with color. RGB format."},
+        new() { Signature = "stop_fill()",           Description = "Closes and fills shape drawn after start_fill()." },
     ];
 
     public LuaService(Turtle turtle)

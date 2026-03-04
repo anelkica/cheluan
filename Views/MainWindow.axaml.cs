@@ -81,6 +81,7 @@ namespace cheluan.Views
             turtle.Reset();
 
             turtle.OnMove += _turtleRenderer.DrawStep;
+            turtle.OnFill += _turtleRenderer.DrawFill;
         }
 
         private void SubscribeToEvents()
