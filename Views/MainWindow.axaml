@@ -8,10 +8,11 @@
 		x:DataType="vm:MainWindowViewModel"
 		MinWidth="900" MinHeight="600"
 		WindowStartupLocation="CenterScreen"
+		SystemDecorations="None"
 		ExtendClientAreaToDecorationsHint="True"
 		ExtendClientAreaChromeHints="NoChrome"
 		ExtendClientAreaTitleBarHeightHint="-1"
-		FontFamily="Cascadia Code, JetBrains Mono, Consolas, monospace"
+		FontFamily="{StaticResource CascadiaCode}"
 		Background="#181818"
 		Foreground="{DynamicResource TextPrimary}"
 		Icon="/Assets/favicon.ico"
@@ -33,7 +34,7 @@
 						   Foreground="#888888"
 						   FontSize="14"
 						   FontWeight="Normal"
-						   FontFamily="Cascadia Code, JetBrains Mono, Consolas, monospace" />
+						   FontFamily="{StaticResource CascadiaCode}" />
 
 				<!-- WINDOW CONTROLS (RIGHT) -->
 				<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="0" VerticalAlignment="Stretch">
@@ -67,7 +68,7 @@
 							CommandParameter="{Binding #CodeEditor}">
 						<StackPanel Orientation="Horizontal" Spacing="6">
 							<svg:Svg Path="avares://cheluan/Assets/Icons/code.svg" Width="16" Height="16" Margin="0,1,0,0" VerticalAlignment="Center"/>
-							<TextBlock Text="Run" VerticalAlignment="Center" FontFamily="monospace"/>
+							<TextBlock Text="Run" VerticalAlignment="Center" FontFamily="{StaticResource CascadiaCode}"/>
 						</StackPanel>
 					</Button>
 					<Button Classes="tool" Content="Clear"
@@ -124,7 +125,7 @@
 												 ShowLineNumbers="True"
 												 Margin="6,0,0,0"
 												 FontSize="14"
-												 FontFamily="Cascadia Code,Consolas,Monospace"
+												 FontFamily="{StaticResource CascadiaCode}"
 												 Background="Transparent"
 												 Foreground="#D4D4D4" />
 					</Grid>
@@ -154,7 +155,7 @@
 										<DataTemplate x:DataType="models:DocumentationEntry">
 											<Border  Margin="4" Padding="10,8" Background="#1e1e1e" BorderThickness="1" BorderBrush="#2B2B2B" CornerRadius="4">
 												<StackPanel>
-													<TextBlock Text="{Binding Signature}" Foreground="{DynamicResource AccentBrush}" FontFamily="Cascadia Code,Consolas,Monospace" FontSize="12"/>
+													<TextBlock Text="{Binding Signature}" Foreground="{DynamicResource AccentBrush}" FontFamily="{StaticResource CascadiaCode}" FontSize="12"/>
 													<TextBlock Text="{Binding Description}" Foreground="#858585" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0"/>
 												</StackPanel>
 											</Border>

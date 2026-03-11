@@ -9,7 +9,7 @@
 		<Setter Property="HorizontalContentAlignment" Value="Center"/>
 		<Setter Property="Padding" Value="20,0"/>
 		<Setter Property="FontSize" Value="13"/>
-		<Setter Property="FontFamily" Value="Cascadia Code, JetBrains Mono, monospace"/>
+		<Setter Property="FontFamily" Value="avares://cheluan/Assets/Fonts/CascadiaCode/#Cascadia Code" />
 		<Setter Property="CornerRadius" Value="0" />
 		<Setter Property="BorderThickness" Value="0"/>
 		<Setter Property="Background" Value="Transparent" />
@@ -105,7 +105,7 @@
 	<Style Selector="MenuItem">
 		<Setter Property="FontSize" Value="12"/>
 		<Setter Property="Foreground" Value="#AAAAAA"/>
-		<Setter Property="FontFamily" Value="Cascadia Code, JetBrains Mono, monospace"/>
+		<Setter Property="FontFamily" Value="avares://cheluan/Assets/Fonts/CascadiaCode/#Cascadia Code" />
 		<Setter Property="Padding" Value="10,6"/>
 
 		<Style Selector="^:selected /template/ Border#root">
@@ -153,7 +153,7 @@
     <Setter Property="BorderThickness" Value="1"/>
 
     <Style Selector="^ ListBoxItem">
-        <Setter Property="FontFamily" Value="Cascadia Code, JetBrains Mono, monospace"/>
+        <Setter Property="FontFamily" Value="avares://cheluan/Assets/Fonts/CascadiaCode/#Cascadia Code" />
         <Setter Property="FontSize" Value="12"/>
         <Setter Property="Foreground" Value="#AAAAAA"/>
         <Setter Property="Padding" Value="10,4"/>
