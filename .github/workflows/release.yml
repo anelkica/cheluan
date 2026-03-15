@@ -1,0 +1,70 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+            artifact_name: cheluan-win-x64
+            extension: .zip
+          - os: ubuntu-latest
+            rid: linux-x64
+            artifact_name: cheluan-linux-x64
+            extension: .tar.gz
+          - os: macos-latest
+            rid: osx-x64
+            artifact_name: cheluan-osx-x64
+            extension: .zip
+          - os: macos-latest
+            rid: osx-arm64
+            artifact_name: cheluan-osx-arm64
+            extension: .zip
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Publish
+        run: |
+          dotnet publish cheluan.csproj -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o ./publish
+
+      - name: Prepare Artifact (Windows/macOS)
+        if: matrix.os != 'ubuntu-latest'
+        shell: pwsh
+        run: |
+          Copy-Item -Path "Scripts" -Destination "./publish/Scripts" -Recurse
+          Compress-Archive -Path "./publish/*" -DestinationPath "${{ matrix.artifact_name }}${{ matrix.extension }}"
+
+      - name: Prepare Artifact (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          cp -r Scripts ./publish/Scripts
+          tar -czvf ${{ matrix.artifact_name }}${{ matrix.extension }} -C ./publish .
+
+      - name: Upload Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true # gotta edit it obviously
+          files: ${{ matrix.artifact_name }}${{ matrix.extension }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
