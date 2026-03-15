@@ -192,14 +192,14 @@ namespace cheluan.Views
         // i don't wanna set a pixel height. this sets the bottom bar to be percentage based using * notation
         private void AdjustEditorHeight()
         {
-            if (vm.IsDocumentationOpen)
+            if (vm!.IsDocumentationOpen)
             {
                 EditorGrid.RowDefinitions[0].Height = new GridLength(7, GridUnitType.Star);
                 EditorGrid.RowDefinitions[1].Height = new GridLength(3, GridUnitType.Star);
             }
             else
             {
-                EditorGrid.RowDefinitions[1].Height = new GridLength(1, GridUnitType.Star);
+                EditorGrid.RowDefinitions[0].Height = new GridLength(1, GridUnitType.Star);
                 EditorGrid.RowDefinitions[1].Height = new GridLength(0);
             }
 
